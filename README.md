@@ -1,3 +1,17 @@
-# Tooltips4Vaadin
+# Add-on project
 
-A Tippy.js based Tooltip-Plugin for Vaadin Flow.
+An empty project for creating an add-on
+
+## Development instructions
+
+Starting the test/demo server:
+```
+mvn jetty:run
+```
+
+This deploys demo at http://localhost:8080
+
+### Branching information
+
+* `master` the latest version of the starter, using latest platform snapshot
+* `v13` the version for Vaadin 13
