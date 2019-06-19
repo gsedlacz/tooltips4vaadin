@@ -1,17 +1,24 @@
-# Add-on project
+# Tooltips4Vaadin
+This plugin allows you to define proper tooltips.
 
-An empty project for creating an add-on
+## Requirements
+Vaadin Flow version: 14+
 
-## Development instructions
+## Usage
+### Setup
+Initially call `Tooltips.init(UI)` to initialize this plugin.  
+It is recommended to do this using an UIInitListener.
+### Set / update a tooltip
+`Tooltips.setTooltip(yourComponent, "an important information")`
+### Remove a tooltip
+`Tooltips.removeTooltip(yourComponent)`  
+Note: You dont have to do this manually as detaching components will deregister themselves.
 
-Starting the test/demo server:
-```
-mvn jetty:run
-```
+## Credit
+This plugin includes these libraries:
+1. popper.js (license: MIT, version: 1.15.0, URL: https://github.com/FezVrasta/popper.js)
+2. tippy.js (license: MIT, version. 4.3.4, URL: https://github.com/atomiks/tippyjs)
 
-This deploys demo at http://localhost:8080
-
-### Branching information
-
-* `master` the latest version of the starter, using latest platform snapshot
-* `v13` the version for Vaadin 13
+## Copyright and license
+Code and documentation copyright 2019 Gerrit Sedlaczek.  
+Code and documentation released under Apache 2.0 license.
