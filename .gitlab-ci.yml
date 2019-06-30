@@ -20,7 +20,7 @@ stages:
 #  - deploy
 
 build_project:
-  image: maven:3.3.9-jdk-8
+  image: maven:3.6.1-jdk-11-slim
   stage: build
   script:
     - mvn com.github.eirslett:frontend-maven-plugin:1.7.6:install-node-and-npm -DnodeVersion="v10.16.0"
