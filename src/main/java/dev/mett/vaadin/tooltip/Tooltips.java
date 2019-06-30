@@ -1,7 +1,6 @@
 package dev.mett.vaadin.tooltip;
 
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
@@ -37,16 +36,22 @@ public final class Tooltips {
 	}
 
 	/**
-	 * Make sure to call this method once before calling any other mehtods of this class.<br>
+	 * Make sure to call this method once before calling any other methods of this class.<br>
 	 * You can call this in your {@link UIInitListener}.
 	 *
-	 * @param ui used to deploy javascript sources
+	 * @param ui used to deploy JavaScript sources
 	 */
 	public static void init(UI ui) {
-		Page page = ui.getPage();
-		page.addJavaScript("js/tooltip/popper.min.js");
-		page.addJavaScript("js/tooltip/tippy.min.js");
-		page.addJavaScript("js/tooltip/tooltips.js");
+		Runnable jsInit = () -> {
+			Page page = ui.getPage();
+			page.addJavaScript("js/tooltip/popper.min.js");
+			page.addJavaScript("js/tooltip/tippy.min.js");
+			page.addJavaScript("js/tooltip/tooltips.js");
+		};
+
+		// guarantees the execution of this code
+		jsInit.run();
+		ui.addAttachListener(evt -> jsInit.run());
 
 		//TODO: apply custom configurations
 	}
@@ -92,9 +97,9 @@ public final class Tooltips {
 			component.addClassName(finalUniqueClassName);
 
 			// 2. register with tippy.js
-			Consumer<UI> register = registerUI -> registerUI.access(() -> page.executeJs(JS_METHODS.SET_TOOLTIP, finalUniqueClassName, tooltip));
-			register.accept(ui);
-			component.addAttachListener(evt -> register.accept(ui));
+			Runnable register = () -> ui.access(() -> page.executeJs(JS_METHODS.SET_TOOLTIP, finalUniqueClassName, tooltip));
+			register.run();
+			component.addAttachListener(evt -> register.run());
 
 			// 3. automatic deregistration
 			component.addDetachListener(evt -> ui.access(() -> removeTooltip(component)));
