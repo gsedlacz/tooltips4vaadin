@@ -86,7 +86,10 @@ public final class Tooltips {
 	 *
 	 * @see #setTooltip(Component, String)
 	 */
-	public static <T extends Component & HasStyle> void setTooltip(final T component, final String tooltip, final UI ui) {
+	public static <T extends Component & HasStyle> void setTooltip(final T component, String tooltip, final UI ui) {
+		tooltip = tooltip.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
+		final String finalTooltip = tooltip;
+
 		final Page page = ui.getPage();
 		String uniqueClassName = getUniqueClassName(component);
 
@@ -97,7 +100,7 @@ public final class Tooltips {
 			component.addClassName(finalUniqueClassName);
 
 			// 2. register with tippy.js
-			Runnable register = () -> ui.access(() -> page.executeJs(JS_METHODS.SET_TOOLTIP, finalUniqueClassName, tooltip));
+			Runnable register = () -> ui.access(() -> page.executeJs(JS_METHODS.SET_TOOLTIP, finalUniqueClassName, finalTooltip));
 			register.run();
 			component.addAttachListener(evt -> register.run());
 
@@ -107,7 +110,7 @@ public final class Tooltips {
 		// update
 		} else {
 			final String finalUniqueClassName = uniqueClassName;
-			ui.access(() -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, finalUniqueClassName, tooltip));
+			ui.access(() -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, finalUniqueClassName, finalTooltip));
 		}
 	}
 
