@@ -1,6 +1,8 @@
 # Tooltips4Vaadin
 This plugin allows you to define proper tooltips.
 
+![Tooltip demo did not load.](https://gitlab.com/gsedlacz/tooltips4vaadin/blob/master/misc/demo.png "Tooltip demo")
+
 ## Requirements
 Vaadin Flow version: 14+
 
