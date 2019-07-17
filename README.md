@@ -17,9 +17,8 @@ It is recommended to do this using an UIInitListener.
 Note: You dont have to do this manually as detaching components will deregister themselves.
 
 ## Credit
-This plugin includes these libraries:
-1. popper.js (license: MIT, version: 1.15.0, URL: https://github.com/FezVrasta/popper.js)
-2. tippy.js (license: MIT, version. 4.3.4, URL: https://github.com/atomiks/tippyjs)
+This plugin makes use of these libraries:
+1. tippy.js (license: MIT, version. 4.3.4, URL: https://github.com/atomiks/tippyjs)
 
 ## Copyright and license
 Code and documentation copyright 2019 Gerrit Sedlaczek.  

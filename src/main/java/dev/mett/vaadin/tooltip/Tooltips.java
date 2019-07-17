@@ -42,19 +42,24 @@ public final class Tooltips {
 	 * @param ui used to deploy JavaScript sources
 	 */
 	public static void init(UI ui) {
-		Runnable jsInit = () -> {
-			Page page = ui.getPage();
-			page.addJavaScript("js/tooltip/popper.min.js");
-			page.addJavaScript("js/tooltip/tippy.min.js");
-			page.addJavaScript("js/tooltip/tooltips.js");
-		};
-
-		// guarantees the execution of this code
-		jsInit.run();
-		ui.addAttachListener(evt -> jsInit.run());
-
+//		Runnable jsInit = () -> {
+//			Page page = ui.getPage();
+//			page.addJavaScript("tippy.js");
+//			page.addJavaScript("js/tooltip/tooltips.js");
+//		};
+//
+//		// guarantees the execution of this code
+//		jsInit.run();
+//		ui.addAttachListener(evt -> jsInit.run());
+		ui.add(new TooltipsJsProvider());
 		//TODO: apply custom configurations
 	}
+
+	/**
+	 * TODO:
+	 * 1. Bulk operations
+	 * 2. register UI init listener
+	 */
 
 
 	/* *** SET / MODIFY *** */
