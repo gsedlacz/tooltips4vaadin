@@ -65,6 +65,11 @@ module.exports = {
       app.get(`/stats.json`, function(req, res) {
         res.json(stats.toJson());
       });
+      app.get(`/stop`, function(req, res) {
+        // eslint-disable-next-line no-console
+        console.log("Stopped 'webpack-dev-server'");
+        process.exit(0);
+      });
     }
   },
 
@@ -73,6 +78,10 @@ module.exports = {
       { // Files that Babel has to transpile
         test: /\.js$/,
         use: [BabelMultiTargetPlugin.loader()]
+      },
+      {
+        test: /\.css$/i,
+        use: ['raw-loader']
       }
     ]
   },
