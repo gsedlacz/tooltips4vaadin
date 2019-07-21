@@ -2,6 +2,7 @@ package dev.mett.vaadin.tooltip;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -14,6 +15,8 @@ public class TooltipDemo extends HorizontalLayout {
 	private final AtomicLong atomicLong = new AtomicLong();
 
 	public TooltipDemo() {
+		Tooltips.init(UI.getCurrent());
+
         EmailField emailField = new EmailField();
         Tooltips.setTooltip(emailField, "initial Value");
 
