@@ -3,13 +3,13 @@
 
     <groupId>dev.mett.vaadin</groupId>
     <artifactId>tooltip</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
     <name>Tooltips4Vaadin</name>
     <description>Proper tooltips for Vaadin Flow.</description>
     <packaging>jar</packaging>
 
     <properties>
-        <vaadin.version>14.0.0.rc5</vaadin.version>
+        <vaadin.version>14.0.0.rc6</vaadin.version>
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -204,5 +204,35 @@
                 </plugins>
             </build>
         </profile>
+        
+        <!-- does not include custom js files -->
+        <!-- <profile>
+			<id>demo</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.jetty</groupId>
+						<artifactId>jetty-maven-plugin</artifactId>
+						<version>${jetty.version}</version>
+						<executions>
+							<execution>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<scanIntervalSeconds>-1</scanIntervalSeconds>
+							Use test scope because the UI/demo classes are in the test package.
+							<useTestScope>true</useTestScope>
+							<supportedPackagings>
+                                <supportedPackaging>jar</supportedPackaging>
+                            </supportedPackagings>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile> -->
     </profiles>
 </project>
