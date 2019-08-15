@@ -1,5 +1,6 @@
 package dev.mett.vaadin.tooltip;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,9 +34,14 @@ import elemental.json.JsonValue;
 public final class Tooltips {
 	private Tooltips() {}
 
-	private final static AtomicLong tooltipIdGenerator 		= new AtomicLong();
-	private final static String CLASS_PREFIX 				= "tooltip-";
-	private final static Map<Integer, TooltipStateData> tooltipStorage = new HashMap<>();
+	private final static AtomicLong tooltipIdGenerator 					= new AtomicLong();
+	private final static String CLASS_PREFIX 							= "tooltip-";
+	private final static Map<Integer, TooltipStateData> tooltipStorage 	= new HashMap<>();
+	private final static long CLEANUP_INTERVAL							= 1000 * 60 /** 60*/;
+	
+	static {
+		TooltipsUtil.setupCleanup(CLEANUP_INTERVAL, tooltipStorage);
+	}
 
 	public interface JS_METHODS {
 		String SET_TOOLTIP 		= "window.tooltips.setTooltip($0,$1)";
@@ -51,6 +57,7 @@ public final class Tooltips {
 	 */
 	public static void init(UI ui) {
 		ui.add(new TooltipsJsProvider());
+
 		//TODO: apply custom configurations
 	}
 
@@ -99,12 +106,10 @@ public final class Tooltips {
 		tooltip = tooltip.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
 		state.setTooltip(tooltip);
 
-//		System.out.println("####### | Trying to define tooltip for " + component + " to " + tooltip);
-
 		if(state.getCssClass() != null) {
 			// update
-//			System.out.println("UPDATE  | class: " + state.getCssClass());
-
+			ensureCssClassIsSet(component, state);
+			
 			if (isAttached) {
 				ui.access(() -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()));
 			}
@@ -117,14 +122,12 @@ public final class Tooltips {
 			component.addClassName(finalUniqueClassName);
 			state.setCssClass(finalUniqueClassName);
 
-//			System.out.println("Created new class: " + finalUniqueClassName);
-
 			// 2. register with tippy.js
 			Runnable register = () -> ui.access(() -> {
 				TooltipStateData stateAttach = getTooltipState(component);
+				ensureCssClassIsSet(component, stateAttach);
 				if(stateAttach.getCssClass() != null && stateAttach.getTooltip() != null) {
 					page.executeJs(JS_METHODS.SET_TOOLTIP, stateAttach.getCssClass(), stateAttach.getTooltip());
-//					System.out.println("SET     | class: " + stateAttach.getCssClass() + " | tooltip " + stateAttach.getTooltip());
 				}
 			});
 
@@ -169,7 +172,6 @@ public final class Tooltips {
 		final TooltipStateData state = getTooltipState(component);
 
 		if(state.getCssClass() != null) {
-//			System.out.println("REMOVE | class: " + state.getCssClass());
 
 			deregisterTooltip(
 					state,
@@ -195,7 +197,6 @@ public final class Tooltips {
 			final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration)
 	{
 		final String uniqueClassName = state.getCssClass();
-//		System.out.println("DEREG  | class " + uniqueClassName);
 
 		ui.access(() -> {
 			ui.getPage().executeJs(JS_METHODS.REMOVE_TOOLTIP, uniqueClassName)
@@ -211,6 +212,7 @@ public final class Tooltips {
 		TooltipStateData state = tooltipStorage.get(hashCode);
 		if(state == null) {
 			state = new TooltipStateData();
+			state.setComponent(new WeakReference<>(comp));
 			tooltipStorage.put(hashCode, state);
 		}
 		return state;
@@ -225,6 +227,12 @@ public final class Tooltips {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	private static <T extends Component & HasStyle> void ensureCssClassIsSet(final T comp, final TooltipStateData state) {
+		if(!comp.getClassName().contains(state.getCssClass())) {
+			comp.addClassName(state.getCssClass());
 		}
 	}
 }
