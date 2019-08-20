@@ -28,8 +28,8 @@ import elemental.json.JsonValue;
  *
  * @author Gerrit Sedlaczek
  *
- * @see #setTooltip(Component, String, UI)
- * @see #removeTooltip(Component, UI)
+ * @see #setTooltip(Component, String)
+ * @see #removeTooltip(Component)
  */
 public final class Tooltips {
 	
@@ -111,9 +111,6 @@ public final class Tooltips {
 	 * @param <T> requires the supplied {@link Component} to implement {@link HasStyle}
 	 * @param component the {@link Component} that is supposed to have a tooltip
 	 * @param tooltip the tooltips information
-	 * @param ui the {@link UI} associated with
-	 *
-	 * @see #setTooltip(Component, String)
 	 */
 	public <T extends Component & HasStyle> void setTooltip(final T component, String tooltip) {
 		final boolean isAttached = component.getElement().getNode().isAttached();
@@ -170,9 +167,6 @@ public final class Tooltips {
 	 *
 	 * @param <T> requires the supplied {@link Component} to implement {@link HasStyle}
 	 * @param component the {@link Component} that currently has a tooltip
-	 * @param ui the {@link UI} associated with
-	 *
-	 * @see #removeTooltip(Component)
 	 */
 	public <T extends Component & HasStyle> void removeTooltip(final T component) {
 		final TooltipStateData state = getTooltipState(component);
