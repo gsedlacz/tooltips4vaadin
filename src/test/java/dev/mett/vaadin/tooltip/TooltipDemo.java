@@ -15,17 +15,23 @@ public class TooltipDemo extends HorizontalLayout {
 	private final AtomicLong atomicLong = new AtomicLong();
 
 	public TooltipDemo() {
-		Tooltips.init(UI.getCurrent());
+		Tooltips tooltips;
+		try {
+			tooltips = new Tooltips(UI.getCurrent());
+		} catch (TooltipsAlreadyInitialized e) {
+			tooltips = Tooltips.getCurrent();
+		}
+		
 
         EmailField emailField = new EmailField();
-        Tooltips.setTooltip(emailField, "initial Value");
+        tooltips.setTooltip(emailField, "initial Value");
 
         Button btChangeTooltip = new Button("change tooltip", evt -> {
-        	Tooltips.setTooltip(emailField, "value-" + atomicLong.getAndIncrement());
+        	Tooltips.getCurrent().setTooltip(emailField, "value-" + atomicLong.getAndIncrement());
         });
 
         Button btRemoveTooltip = new Button("remove tooltip", evt -> {
-        	Tooltips.removeTooltip(emailField);
+        	Tooltips.getCurrent().removeTooltip(emailField);
         });
 
         Button btDetachAttachField = new Button("detach/attach field", evt -> {
