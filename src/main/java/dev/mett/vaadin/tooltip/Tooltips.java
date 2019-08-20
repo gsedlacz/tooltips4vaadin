@@ -1,6 +1,5 @@
 package dev.mett.vaadin.tooltip;
 
-import java.lang.ref.Cleaner.Cleanable;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +12,6 @@ import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
-import com.vaadin.flow.server.UIInitListener;
 import com.vaadin.flow.shared.Registration;
 
 import elemental.json.JsonValue;
@@ -107,22 +105,6 @@ public final class Tooltips {
 	/* *** SET / MODIFY *** */
 
 	/**
-	 * Sets a tooltip to any kind of ui element.<br>
-	 * Automatically deregisters itself upon the components detach.<br>
-	 * <br>
-	 * Uses {@link UI#getCurrent()}.
-	 *
-	 * @param <T> requires the supplied {@link Component} to implement {@link HasStyle}
-	 * @param component the {@link Component} that is supposed to have a tooltip
-	 * @param tooltip the tooltips information
-	 *
-	 * @see #setTooltip(Component, String, UI)
-	 */
-	public <T extends Component & HasStyle> void setTooltip(final T component, final String tooltip) {
-		setTooltip(component, tooltip, UI.getCurrent());
-	}
-
-	/**
 	 * Sets a tooltip to the supplied {@link Component}.<br>
 	 * Automatically deregisters itself upon the components detach.<br>
 	 *
@@ -133,7 +115,7 @@ public final class Tooltips {
 	 *
 	 * @see #setTooltip(Component, String)
 	 */
-	public <T extends Component & HasStyle> void setTooltip(final T component, String tooltip, final UI ui) {
+	public <T extends Component & HasStyle> void setTooltip(final T component, String tooltip) {
 		final boolean isAttached = component.getElement().getNode().isAttached();
 		final Page page = ui.getPage();
 		final TooltipStateData state = getTooltipState(component);
@@ -182,19 +164,7 @@ public final class Tooltips {
 
 
 	/* *** REMOVE *** */
-
-	/**
-	 * Removes a tooltip form a {@link Component}.
-	 *
-	 * @param <T> requires the supplied {@link Component} to implement {@link HasStyle}
-	 * @param component the {@link Component} that currently has a tooltip
-	 *
-	 * @see #removeTooltip(Component, UI)
-	 */
-	public <T extends Component & HasStyle> void removeTooltip(final T component) {
-		removeTooltip(component, UI.getCurrent());
-	}
-
+	
 	/**
 	 * Removes a tooltip form a {@link Component}.
 	 *
@@ -204,7 +174,7 @@ public final class Tooltips {
 	 *
 	 * @see #removeTooltip(Component)
 	 */
-	public <T extends Component & HasStyle> void removeTooltip(final T component, final UI ui) {
+	public <T extends Component & HasStyle> void removeTooltip(final T component) {
 		final TooltipStateData state = getTooltipState(component);
 
 		if(state.getCssClass() != null) {
