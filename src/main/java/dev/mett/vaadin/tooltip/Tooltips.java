@@ -113,6 +113,10 @@ public final class Tooltips {
 	 * @param tooltip the tooltips information
 	 */
 	public <T extends Component & HasStyle> void setTooltip(final T component, String tooltip) {
+		if(component == null || tooltip == null) {
+		    return;
+		}
+
 		final boolean isAttached = component.getElement().getNode().isAttached();
 		final Page page = ui.getPage();
 		final TooltipStateData state = getTooltipState(component);
@@ -171,7 +175,7 @@ public final class Tooltips {
 	public <T extends Component & HasStyle> void removeTooltip(final T component) {
 		final TooltipStateData state = getTooltipState(component);
 
-		if(state.getCssClass() != null) {
+		if(state.getCssClass() != null && component != null) {
 
 			deregisterTooltip(
 					state,
@@ -231,7 +235,9 @@ public final class Tooltips {
 	}
 	
 	private static <T extends Component & HasStyle> void ensureCssClassIsSet(final T comp, final TooltipStateData state) {
-		if(!comp.getClassName().contains(state.getCssClass())) {
+		if(   comp.getClassName() != null 
+		   && !comp.getClassName().contains(state.getCssClass())) 
+	    {
 			comp.addClassName(state.getCssClass());
 		}
 	}
