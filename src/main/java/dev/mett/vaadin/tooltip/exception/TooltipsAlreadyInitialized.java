@@ -1,4 +1,4 @@
-package dev.mett.vaadin.tooltip;
+package dev.mett.vaadin.tooltip.exception;
 
 public class TooltipsAlreadyInitialized extends Exception {
 	private static final long serialVersionUID = -4847616951890701625L;

@@ -20,4 +20,13 @@ public class TooltipStateData {
 	private String tooltip;
 	@Getter @Setter
 	private WeakReference<Component> component;
+	
+	@Getter @Setter
+	private Optional<WeakReference<Component>> wrapper;
+	
+	TooltipStateData() {
+		this.attachReg = Optional.empty();
+		this.detachReg = Optional.empty();
+		this.wrapper = Optional.empty();
+	}
 }

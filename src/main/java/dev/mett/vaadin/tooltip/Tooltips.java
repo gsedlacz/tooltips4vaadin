@@ -14,6 +14,7 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
 
+import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitialized;
 import elemental.json.JsonValue;
 
 /**
@@ -116,51 +117,87 @@ public final class Tooltips {
 		if(component == null || tooltip == null) {
 		    return;
 		}
-
-		final boolean isAttached = component.getElement().getNode().isAttached();
-		final Page page = ui.getPage();
+		
 		final TooltipStateData state = getTooltipState(component);
 
 		// newlines to html
 		tooltip = tooltip.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
 		state.setTooltip(tooltip);
-
-		if(state.getCssClass() != null) {
-			// update
-			ensureCssClassIsSet(component, state);
-			
-			if (isAttached) {
-				ui.access(() -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()));
-			}
-			// else: automatically uses the new value upon attach
-
+		
+		if(!state.getWrapper().isEmpty()) {
+			setTooltipToWrapper(state);
+		
 		} else {
-			//initial setup
-			// 1. set unique class
-			final String finalUniqueClassName = CLASS_PREFIX + tooltipIdGenerator.getAndIncrement();
-			component.addClassName(finalUniqueClassName);
-			state.setCssClass(finalUniqueClassName);
-
-			// 2. register with tippy.js
-			Runnable register = () -> ui.access(() -> {
-				TooltipStateData stateAttach = getTooltipState(component);
-				ensureCssClassIsSet(component, stateAttach);
-				if(stateAttach.getCssClass() != null && stateAttach.getTooltip() != null) {
-					page.executeJs(JS_METHODS.SET_TOOLTIP, stateAttach.getCssClass(), stateAttach.getTooltip());
-				}
-			});
-
-			if(isAttached) {
-				register.run();
-			}
-
-			Registration attachReg = component.addAttachListener(evt -> register.run());
-			state.setAttachReg(Optional.of(attachReg));
-
-			// 3. automatic deregistration
-			Registration detachReg = component.addDetachListener(evt -> ui.access(() -> deregisterTooltip(getTooltipState(component), ui, Optional.empty())));
-			state.setDetachReg(Optional.of(detachReg));
+			setTooltipToFrontend(state);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Component & HasStyle> void setTooltipToWrapper(TooltipStateData state) {
+		state.getWrapper().ifPresent(weakWrapper -> {
+			Component wrapper = weakWrapper.get();
+			if(wrapper != null) {
+				setTooltip((T) wrapper, state.getTooltip());
+			}
+		});
+	}
+	
+	private <T extends Component & HasStyle> void setTooltipToFrontend(TooltipStateData state) {
+		@SuppressWarnings("unchecked")
+		final T component = (T) state.getComponent().get();
+		if(component != null) {
+			
+			final boolean isAttached = component.getElement().getNode().isAttached();
+			final Page page = ui.getPage();
+			
+			if(state.getCssClass() != null) {
+				// update
+				ensureCssClassIsSet(component, state);
+				
+				if (isAttached) {
+					ui.access(() -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()));
+				}
+				// else: automatically uses the new value upon attach
+
+			} else {
+				//initial setup
+				// 1. set unique class
+				final String finalUniqueClassName = CLASS_PREFIX + tooltipIdGenerator.getAndIncrement();
+				component.addClassName(finalUniqueClassName);
+				state.setCssClass(finalUniqueClassName);
+
+				// 2. register with tippy.js
+				Runnable register = () -> ui.access(() -> {
+					TooltipStateData stateAttach = getTooltipState(component);
+					ensureCssClassIsSet(component, stateAttach);
+					if(stateAttach.getCssClass() != null && stateAttach.getTooltip() != null) {
+						page.executeJs(JS_METHODS.SET_TOOLTIP, stateAttach.getCssClass(), stateAttach.getTooltip());
+					}
+				});
+
+				if(isAttached) {
+					register.run();
+				}
+
+				Registration attachReg = component.addAttachListener(evt -> {
+					if(!getTooltipState(component).getWrapper().isPresent()) {
+						register.run();
+					}
+				});
+				state.setAttachReg(Optional.of(attachReg));
+
+				// 3. automatic deregistration
+				state.setDetachReg(Optional.of(registerDetachListener(component)));
+			}
+		}
+	}
+	
+	Registration registerDetachListener(Component component) {
+		return component.addDetachListener(evt -> ui.access(() -> {
+			if(!getTooltipState(component).getWrapper().isPresent()) {
+				deregisterTooltip(getTooltipState(component), ui, Optional.empty());
+			}
+		}));
 	}
 
 
@@ -208,10 +245,31 @@ public final class Tooltips {
 		});
 	}
 
+	/* *** GET *** */
+	
+	/**
+	 * Returns the components current tooltip value.
+	 * 
+	 * @param comp {@link Component}
+	 * @return {@link Optional}<{@link String}> tooltip value
+	 */
+	public Optional<String> getTooltip(final Component comp) {
+		if(comp == null) {
+			return Optional.empty();
+		}
+		
+		TooltipStateData state = tooltipStorage.get(comp.hashCode());
+		
+		if(state == null || state.getTooltip() == null || state.getTooltip().isEmpty()) {
+			return Optional.empty();
+		}
+		
+		return Optional.of(state.getTooltip());
+	}
 
 	/* *** UTIL *** */
 
-	private TooltipStateData getTooltipState(final Component comp) {
+	TooltipStateData getTooltipState(final Component comp) {
 		final int hashCode = comp.hashCode();
 		TooltipStateData state = tooltipStorage.get(hashCode);
 		if(state == null) {

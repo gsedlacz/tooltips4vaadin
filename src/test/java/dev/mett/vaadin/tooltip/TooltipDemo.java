@@ -9,6 +9,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.router.Route;
 
+import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitialized;
+
 @Route("")
 public class TooltipDemo extends HorizontalLayout {
 	private static final long serialVersionUID = 7591127437515385460L;
