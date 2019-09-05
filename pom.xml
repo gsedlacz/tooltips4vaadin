@@ -3,7 +3,7 @@
 
     <groupId>dev.mett.vaadin</groupId>
     <artifactId>tooltip</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <name>Tooltips4Vaadin</name>
     <description>Proper tooltips for Vaadin Flow.</description>
     <packaging>jar</packaging>
@@ -213,7 +213,7 @@
         </profile>
         
         <!-- does not include custom js files -->
-        <!-- <profile>
+        <profile>
 			<id>demo</id>
 			<build>
 				<plugins>
@@ -231,7 +231,7 @@
 						</executions>
 						<configuration>
 							<scanIntervalSeconds>-1</scanIntervalSeconds>
-							Use test scope because the UI/demo classes are in the test package.
+							<!-- Use test scope because the UI/demo classes are in the test package.-->
 							<useTestScope>true</useTestScope>
 							<supportedPackagings>
                                 <supportedPackaging>jar</supportedPackaging>
@@ -240,6 +240,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile> -->
+		</profile>
     </profiles>
 </project>
