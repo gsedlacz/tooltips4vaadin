@@ -37,9 +37,9 @@ public final class Tooltips {
 	private final static String CLASS_PREFIX 	= "tooltip-";
 	
 	public interface JS_METHODS {
-		String SET_TOOLTIP 		= "window.tooltips.setTooltip($0,$1)";
+		String SET_TOOLTIP 		= "return window.tooltips.setTooltip($0,$1)";
 		String UPDATE_TOOLTIP 	= "window.tooltips.updateTooltip($0,$1)";
-		String REMOVE_TOOLTIP 	= "window.tooltips.removeTooltip($0)";
+		String REMOVE_TOOLTIP 	= "window.tooltips.removeTooltip($0,$1)";
 	}
 	
 	
@@ -145,8 +145,10 @@ public final class Tooltips {
 			Runnable register = () -> ui.access(() -> {
 				TooltipStateData stateAttach = getTooltipState(component);
 				ensureCssClassIsSet(component, stateAttach);
+				
 				if(stateAttach.getCssClass() != null && stateAttach.getTooltip() != null) {
-					page.executeJs(JS_METHODS.SET_TOOLTIP, stateAttach.getCssClass(), stateAttach.getTooltip());
+					page.executeJs(JS_METHODS.SET_TOOLTIP, stateAttach.getCssClass(), stateAttach.getTooltip())
+						.then(json -> stateAttach.setTooltipId((int) json.asNumber()));
 				}
 			});
 
@@ -200,10 +202,11 @@ public final class Tooltips {
 			final UI ui,
 			final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration)
 	{
-		final String uniqueClassName = state.getCssClass();
+		final String uniqueClassName 	= state.getCssClass();
+		final int tooltipId				= state.getTooltipId();
 
 		ui.access(() -> {
-			ui.getPage().executeJs(JS_METHODS.REMOVE_TOOLTIP, uniqueClassName)
+			ui.getPage().executeJs(JS_METHODS.REMOVE_TOOLTIP, uniqueClassName, tooltipId)
 				.then(afterFrontendDeregistration.orElse(nothing -> {/* nothing */}));
 		});
 	}

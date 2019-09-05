@@ -19,5 +19,7 @@ public class TooltipStateData {
 	@Getter @Setter
 	private String tooltip;
 	@Getter @Setter
+	private int tooltipId;
+	@Getter @Setter
 	private WeakReference<Component> component;
 }
