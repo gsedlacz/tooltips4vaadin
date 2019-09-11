@@ -130,7 +130,7 @@ public final class Tooltips {
 			ensureCssClassIsSet(component, state);
 			
 			if (isAttached) {
-				ui.access(() -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()));
+				TooltipsUtil.securelyAccessUI(ui, () -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()));
 			}
 			// else: automatically uses the new value upon attach
 
@@ -142,7 +142,7 @@ public final class Tooltips {
 			state.setCssClass(finalUniqueClassName);
 
 			// 2. register with tippy.js
-			Runnable register = () -> ui.access(() -> {
+			Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
 				TooltipStateData stateAttach = getTooltipState(component);
 				ensureCssClassIsSet(component, stateAttach);
 				
@@ -160,7 +160,7 @@ public final class Tooltips {
 			state.setAttachReg(Optional.of(attachReg));
 
 			// 3. automatic deregistration
-			Registration detachReg = component.addDetachListener(evt -> ui.access(() -> deregisterTooltip(getTooltipState(component), ui, Optional.empty())));
+			Registration detachReg = component.addDetachListener(evt -> TooltipsUtil.securelyAccessUI(ui, () -> deregisterTooltip(getTooltipState(component), ui, Optional.empty())));
 			state.setDetachReg(Optional.of(detachReg));
 		}
 	}
@@ -205,7 +205,7 @@ public final class Tooltips {
 		final String uniqueClassName 	= state.getCssClass();
 		final int tooltipId				= state.getTooltipId();
 
-		ui.access(() -> {
+		TooltipsUtil.securelyAccessUI(ui, () -> {
 			ui.getPage().executeJs(JS_METHODS.REMOVE_TOOLTIP, uniqueClassName, tooltipId)
 				.then(afterFrontendDeregistration.orElse(nothing -> {/* nothing */}));
 		});
@@ -229,8 +229,8 @@ public final class Tooltips {
 		final int hashCode = comp.hashCode();
 		final TooltipStateData state = tooltipStorage.remove(hashCode);
 		if(state != null) {
-			state.getAttachReg().ifPresent(reg -> reg.remove());
-			state.getDetachReg().ifPresent(reg -> reg.remove());
+			state.getAttachReg().ifPresent(Registration::remove);
+			state.getDetachReg().ifPresent(Registration::remove);
 			return true;
 		} else {
 			return false;
