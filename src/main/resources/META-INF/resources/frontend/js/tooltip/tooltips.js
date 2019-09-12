@@ -38,7 +38,7 @@ window.tooltips = {
 			https://www.wolframalpha.com/input/?i=Sum%5B100*x%5Ek%2C+%7Bk%2C+0%2C+4%7D%5D+%3D+5+*+1000
 			https://www.wolframalpha.com/input/?i=Sum%5B100*2.3178%5Ek%2C+%7Bk%2C+0%2C+4%7D%5D
 		*/
-		getRetryOperation = function (){
+		getRetryOperation: function (){
 			return retry.operation({
 				retries: 5,
 				factor: 2.3178,
