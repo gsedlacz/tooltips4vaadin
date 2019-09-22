@@ -3,6 +3,9 @@ This plugin allows you to define proper tooltips.
 
 ![Tooltip demo did not load.](https://gitlab.com/gsedlacz/tooltips4vaadin/raw/master/misc/demo.png "Tooltip demo")
 
+## Official Download
+[Vaadin Directory](https://vaadin.com/directory/component/tooltips4vaadin)
+
 ## Requirements
 1. Java 1.8
 2. Vaadin Flow version: 14+
