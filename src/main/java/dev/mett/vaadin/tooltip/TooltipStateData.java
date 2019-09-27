@@ -1,5 +1,6 @@
 package dev.mett.vaadin.tooltip;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.Optional;
 
@@ -9,8 +10,10 @@ import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
 import lombok.Setter;
 
-public class TooltipStateData {
-	@Getter @Setter
+public class TooltipStateData implements Serializable {
+    private static final long serialVersionUID = -2994087447549309682L;
+    
+    @Getter @Setter
 	private Optional<Registration> attachReg;
 	@Getter @Setter
 	private Optional<Registration> detachReg;
