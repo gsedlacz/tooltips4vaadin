@@ -1,5 +1,6 @@
 package dev.mett.vaadin.tooltip;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,9 +32,10 @@ import elemental.json.JsonValue;
  * @see #setTooltip(Component, String)
  * @see #removeTooltip(Component)
  */
-public final class Tooltips {
-	
-	private final static String UI_KEY 			= "TOOLTIPS";
+public final class Tooltips implements Serializable {
+    private static final long serialVersionUID = 2847553469052560067L;
+    
+    private final static String UI_KEY 			= "TOOLTIPS";
 	private final static String CLASS_PREFIX 	= "tooltip-";
 	
 	public interface JS_METHODS {
