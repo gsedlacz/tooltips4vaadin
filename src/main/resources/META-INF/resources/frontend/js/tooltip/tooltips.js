@@ -20,9 +20,6 @@ window.tooltips = {
 		},
 		
 		removeTooltip: function(classname, tooltipId){
-			const tooltipElement = window.tooltips.getElement(classname);
-			if(tooltipElement) tooltipElement._tippy.destroy();
-			
 			/* tippy fails to remove tooltips whose registered component 
 			   gets removed during the open animation */
 			const lostTooltip = document.getElementById('tippy-' + tooltipId);
