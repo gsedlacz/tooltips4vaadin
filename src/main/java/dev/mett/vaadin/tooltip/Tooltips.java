@@ -2,7 +2,7 @@ package dev.mett.vaadin.tooltip;
 
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -81,7 +81,7 @@ public final class Tooltips implements Serializable {
 	/** TOOLTIPS INSTANCE **/
 	
 	private final AtomicLong tooltipIdGenerator 					= new AtomicLong();
-	private final Map<Integer, TooltipStateData> tooltipStorage 	= new HashMap<>();
+	private final Map<Component, TooltipStateData> tooltipStorage 	= new IdentityHashMap<>();
 	private final UI ui;
 	
 	public Tooltips(UI ui) throws TooltipsAlreadyInitialized {
@@ -276,19 +276,17 @@ public final class Tooltips implements Serializable {
 	/* *** UTIL *** */
 
 	TooltipStateData getTooltipState(final Component comp) {
-		final int hashCode = comp.hashCode();
-		TooltipStateData state = tooltipStorage.get(hashCode);
+		TooltipStateData state = tooltipStorage.get(comp);
 		if(state == null) {
 			state = new TooltipStateData();
 			state.setComponent(new WeakReference<>(comp));
-			tooltipStorage.put(hashCode, state);
+			tooltipStorage.put(comp, state);
 		}
 		return state;
 	}
 
 	private boolean removeTooltipState(final Component comp) {
-		final int hashCode = comp.hashCode();
-		final TooltipStateData state = tooltipStorage.remove(hashCode);
+		final TooltipStateData state = tooltipStorage.remove(comp);
 		if(state != null) {
 			state.getAttachReg().ifPresent(Registration::remove);
 			state.getDetachReg().ifPresent(Registration::remove);
