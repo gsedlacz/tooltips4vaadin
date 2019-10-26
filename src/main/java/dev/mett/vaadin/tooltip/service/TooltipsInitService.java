@@ -8,7 +8,7 @@ import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
 import dev.mett.vaadin.tooltip.Tooltips;
-import dev.mett.vaadin.tooltip.TooltipsAlreadyInitialized;
+import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitialized;
 
 /**
  * This class provides an easy way to setup this library.<br>

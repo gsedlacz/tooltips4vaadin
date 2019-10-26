@@ -79,7 +79,8 @@ public interface HasTooltipWrapper<T extends Component & HasStyle> extends HasTo
 		});
 	}
 	
-	private int getIndexOfIn(Element child, Element parent) {
+	/** TODO: make private for Java >1.8 */
+	default int getIndexOfIn(Element child, Element parent) {
 		return parent.getChildren()
 			     	 .collect(Collectors.toList())
 			     	 .indexOf(child);
