@@ -27,6 +27,7 @@ public interface HasTooltip extends HasElement {
 	/**
 	 * Adds a tooltip to the implementing {@link Component}.
 	 * 
+	 * @param <T> the type of a styleable component
 	 * @param tooltip the String to display (may contain html)
 	 * @param ui {@link UI}
 	 */
