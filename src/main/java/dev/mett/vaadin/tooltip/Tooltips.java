@@ -169,7 +169,7 @@ public final class Tooltips implements Serializable {
 				state.setCssClass(finalUniqueClassName);
 
 				// 2. register with tippy.js
-			Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
+				Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
 					TooltipStateData stateAttach = getTooltipState(component);
 					ensureCssClassIsSet(component, stateAttach);
 				
@@ -191,21 +191,11 @@ public final class Tooltips implements Serializable {
 				state.setAttachReg(Optional.of(attachReg));
 
 				// 3. automatic deregistration
-				Registration detachReg = component.addDetachListener(evt -> TooltipsUtil.securelyAccessUI(ui, () -> deregisterTooltip(getTooltipState(component), ui, Optional.empty())));
-				state.setDetachReg(Optional.of(detachReg));
+				state.setDetachReg(Optional.of(component.addDetachListener(evt -> TooltipsUtil.securelyAccessUI(ui, () -> deregisterTooltip(getTooltipState(component), ui, Optional.empty())))));
 			}
 		}
 	}
 	
-	Registration registerDetachListener(Component component) {
-		return component.addDetachListener(evt -> ui.access(() -> {
-			if(!getTooltipState(component).getWrapper().isPresent()) {
-				deregisterTooltip(getTooltipState(component), ui, Optional.empty());
-			}
-		}));
-	}
-
-
 	/* *** REMOVE *** */
 	
 	/**
