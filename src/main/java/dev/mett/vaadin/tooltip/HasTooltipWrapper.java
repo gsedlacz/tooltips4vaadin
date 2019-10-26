@@ -53,8 +53,6 @@ public interface HasTooltipWrapper<T extends Component & HasStyle> extends HasTo
 					originalParentElement.insertChild(indexInOriginalParent, getElement());
 					originalParentElement.removeChild(parentElement);
 					
-					tooltips.registerDetachListener(component);
-					
 					state.setWrapper(Optional.empty());
 					tooltips.setTooltip(component, state.getTooltip());
 					
@@ -70,8 +68,6 @@ public interface HasTooltipWrapper<T extends Component & HasStyle> extends HasTo
 					
 					tooltips.setTooltip(wrapper, state.getTooltip());
 					
-					//keeps the component from deregistering itself
-					state.getDetachReg().ifPresent(detachReg -> detachReg.remove());
 					wrapper.add(component);
 					parentElement.insertChild(indexInOriginalParent, wrapper.getElement());
 				}
