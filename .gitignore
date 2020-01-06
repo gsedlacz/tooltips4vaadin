@@ -283,3 +283,4 @@ typings/
 .designer
 
 # End of https://www.gitignore.io/api/node,java,maven,vaadin,eclipse,intellij
+/webpack.generated.js
