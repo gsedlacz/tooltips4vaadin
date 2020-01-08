@@ -78,5 +78,14 @@ window.tooltips = {
 			   gets removed during the open animation */
 			const lostTooltip = document.getElementById('tippy-' + tooltipId);
 			if(lostTooltip) lostTooltip._tippy.destroy();
+			
+			/* destroy frontend tooltip */
+			this.getElementFaulttolerant(classname)
+			.then(tooltipElement => {
+				if(tooltipElement) tooltipElement._tippy.destroy();
+			})
+			.catch(err => {
+				console.log("removeTooltip: " + err);	
+			})
 		},
 }
