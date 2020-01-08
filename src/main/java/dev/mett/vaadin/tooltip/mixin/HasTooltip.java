@@ -38,4 +38,19 @@ public interface HasTooltip extends HasElement {
 			}
 		});
 	}
+	
+	/**
+	 * Removes a tooltip from the implementing {@link Component}
+	 * 
+	 * @param <T> the type of a styleable component
+	 * @param ui {@link UI}
+	 */
+	@SuppressWarnings("unchecked")
+	default <T extends Component & HasStyle> void removeTooltip(UI ui) {
+        getElement().getComponent().ifPresent(comp -> {
+            if(comp instanceof HasStyle) {
+                Tooltips.get(ui).removeTooltip((T)comp);
+            }
+        });
+    }
 }
