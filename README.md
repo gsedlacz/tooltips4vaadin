@@ -22,14 +22,25 @@ Tooltips.getCurrent().setTooltip(yourComponent, "an important information")
 Tooltips.getCurrent().removeTooltip(yourComponent)
 ``` 
 
+### Mixin Interface for Components
+```
+class MyComp extends Component implements HasTooltip {
+    MyComp(){
+        this.setTooltip("useful hint");
+        this.removeTooltip();
+    }
+}
+```
+
 ## Browser Compatibilty
 This library should work nicely with any modern browser but only the ones shown on the were tested.
 
 ## Credit
 This plugin makes use of these libraries:
-1. tippy.js (license: MIT, version. 4.3.4, URL: https://github.com/atomiks/tippyjs)
+1. tippy.js (license: MIT, version. 5.1.4, URL: https://github.com/atomiks/tippyjs)
 2. Project Lombok (license: MIT, version 1.18.8, URL: https://projectlombok.org/)
+3. retry (license: MIT, version: 0.12.0, URL: https://www.npmjs.com/package/retry)
 
 ## Copyright and license
-Code and documentation copyright 2019 Gerrit Sedlaczek.  
+Code and documentation copyright 2020 Gerrit Sedlaczek.  
 Code and documentation released under Apache 2.0 license.
