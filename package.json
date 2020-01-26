@@ -4,7 +4,8 @@
   "dependencies": {
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "@vaadin/flow-deps": "./target/frontend"
+    "@vaadin/flow-deps": "./target/frontend",
+    "tippy.js": "5.1.4"
   },
   "devDependencies": {
     "webpack": "4.30.0",
@@ -16,5 +17,5 @@
     "raw-loader": "3.0.0",
     "compression-webpack-plugin": "3.0.1"
   },
-  "vaadinAppPackageHash": "a17c0a136d16a3cf7e43761fac2095cb0aff3056465f09c5b5b3b47241bddb7c"
+  "vaadinAppPackageHash": "0a407d17d89d7395da1ac443f54fef72837191ae5e103ab9997f427b343d87c9"
 }

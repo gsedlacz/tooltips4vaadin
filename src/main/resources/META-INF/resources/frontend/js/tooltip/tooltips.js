@@ -1,4 +1,4 @@
-import tippy from 'tippy.js';
+import tippy from 'tippy.js/dist/tippy-bundle.esm';
 import retry from 'retry';
 
 window.tooltips = {
@@ -58,7 +58,7 @@ window.tooltips = {
 			})
 			.catch(err => {
 				console.log("setTooltip: " + err);
-				return null; //TODO: Java check for null | wont be able to update
+				return null;
 			})
 		},
 		

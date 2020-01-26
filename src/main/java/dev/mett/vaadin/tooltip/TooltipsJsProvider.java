@@ -5,8 +5,10 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dependency.NpmPackage;
 
-@NpmPackage(value = "tippy.js", version = "4.3.4")
-@NpmPackage(value = "retry", 	version = "0.12.0")
+// NOTE: Vaadin for some reason does not remember 'tippy.js' upon building a project that uses this plugin
+//       Therefore it needs to be redeclared in pom.xml
+@NpmPackage(value = "tippy.js", version = "5.1.4")
+@NpmPackage(value = "retry",    version = "0.12.0")
 @JsModule("./js/tooltip/tooltips.js")
 @Tag("div")
 public class TooltipsJsProvider extends Component {
