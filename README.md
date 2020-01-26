@@ -33,7 +33,7 @@ class MyComp extends Component implements HasTooltip {
 ```
 
 ## Browser Compatibilty
-This library should work nicely with any modern browser but only the ones shown on the were tested.
+This library should work nicely with any modern browser but Chrome and Firefox were used during testting.
 
 ## Credit
 This plugin makes use of these libraries:
