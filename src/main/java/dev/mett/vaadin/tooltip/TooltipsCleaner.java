@@ -1,6 +1,7 @@
 package dev.mett.vaadin.tooltip;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +20,7 @@ enum TooltipsCleaner{
     INSTANCE;
     
     private final Logger log = Logger.getLogger(TooltipsCleaner.class.getName());
-    private final List<WeakReference<UI>> uis = new LinkedList<>();
+    private final List<WeakReference<UI>> uis = Collections.synchronizedList(new LinkedList<>());
     
     TooltipsCleaner() {
         Thread t = new Thread(() -> {
@@ -44,27 +45,30 @@ enum TooltipsCleaner{
     }
     
     private void cleanup() {
-        Iterator<WeakReference<UI>> iterator = uis.iterator();
-        while(iterator.hasNext()) {
-            WeakReference<UI> uiRef = iterator.next();
-            UI ui = uiRef.get();
+        synchronized (uis) {
+            Iterator<WeakReference<UI>> iterator = uis.iterator();
             
-            if(ui == null || ui.isClosing()) {
-                iterator.remove();
-                continue;
+            while(iterator.hasNext()) {
+                WeakReference<UI> uiRef = iterator.next();
+                UI ui = uiRef.get();
+                
+                if(ui == null || ui.isClosing()) {
+                    iterator.remove();
+                    continue;
+                }
+                
+                Map<Long, TooltipStateData> tooltipStorage = Tooltips.get(ui).getTooltipStorage();
+                
+                // debug output
+                log.log(Level.FINEST, () -> "TooltipsCleaner: size pre-clean: " + tooltipStorage.size() + " | UI: " + ui);
+                
+                tooltipStorage.entrySet()
+                              .removeIf(entry -> 
+                                  entry.getValue().getComponent().get() == null);
+                
+                // debug output
+                log.log(Level.FINEST, () -> "TooltipsCleaner: size post-clean: " + tooltipStorage.size() + " | UI: " + ui);
             }
-            
-            Map<Long, TooltipStateData> tooltipStorage = Tooltips.get(ui).getTooltipStorage();
-            
-            // debug output
-            log.log(Level.FINEST, () -> "TooltipsCleaner: size pre-clean: " + tooltipStorage.size() + " | UI: " + ui);
-            
-            tooltipStorage.entrySet()
-                          .removeIf(entry -> 
-                              entry.getValue().getComponent().get() == null);
-            
-            // debug output
-            log.log(Level.FINEST, () -> "TooltipsCleaner: size post-clean: " + tooltipStorage.size() + " | UI: " + ui);
         }
     }
     
