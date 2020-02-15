@@ -140,6 +140,7 @@ public final class Tooltips implements Serializable {
 			if (attached) {
 				TooltipsUtil.securelyAccessUI(ui, () ->
 					page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip())
+					    .then(json -> setTippyId(state, json))
 				);
 			}
 			// else: automatically uses the new value upon attach

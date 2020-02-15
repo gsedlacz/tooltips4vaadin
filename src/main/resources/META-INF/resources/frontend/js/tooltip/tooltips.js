@@ -49,27 +49,42 @@ window.tooltips = {
 			//const tooltipElement = window.tooltips.getElement(classname);
 			return this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
-				if(tooltipElement) tippy(tooltipElement, {
-					content: tooltip
-				});
-				
-				// this id will be used by tooltips DOM id associated with the tooltipElement
-				return tooltipElement._tippy.id;
+				return window.tooltips.setTooltipToElement(tooltipElement, tooltip);
 			})
 			.catch(err => {
-				console.log("setTooltip: " + err);
+				console.debug("setTooltip: " + err);
 				return null;
 			})
+		},
+		
+		setTooltipToElement: function(tooltipElement, tooltip){
+			if(tooltipElement) {
+				tippy(tooltipElement, {
+					content: tooltip
+				});
+			
+				// this id will be used by tooltips DOM id associated with the tooltipElement
+				return tooltipElement._tippy.id;
+			}
+			console.debug(tooltipElement)
 		},
 		
 		updateTooltip: function (classname, tooltip){
 			//const tooltipElement = window.tooltips.getElement(classname);
 			return this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
-				if(tooltipElement) tooltipElement._tippy.setContent(tooltip);
+				if(tooltipElement) {
+					if(tooltipElement._tippy){
+						tooltipElement._tippy.setContent(tooltip);
+					
+					} else {
+						// lost its _tippy sub entry for some reason
+						return window.tooltips.setTooltipToElement(tooltipElement, tooltip);
+					}
+				}
 			})
 			.catch(err => {
-				console.log("updateTooltip: " + err);	
+				console.debug("updateTooltip: " + err);	
 			})
 		},
 		
@@ -85,7 +100,7 @@ window.tooltips = {
 				if(tooltipElement) tooltipElement._tippy.destroy();
 			})
 			.catch(err => {
-				console.log("removeTooltip: " + err);	
+				console.debug("removeTooltip: " + err);	
 			})
 		},
 }
