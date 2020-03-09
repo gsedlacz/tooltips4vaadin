@@ -45,7 +45,9 @@ const net = require('net');
 
 function setupWatchDog(){
     var client = new net.Socket();
-    client.connect(watchDogPort, 'localhost');
+    client.connect(watchDogPort, 'localhost', function() {
+        console.debug('Watchdog connected.');
+    });
 
     client.on('error', function(){
         console.log("Watchdog connection error. Terminating webpack process...");
@@ -55,6 +57,7 @@ function setupWatchDog(){
 
     client.on('close', function() {
         client.destroy();
+        console.debug('Watchdog connection closed. Trying to re-run watchdog.');
         setupWatchDog();
     });  
 }
@@ -79,8 +82,7 @@ module.exports = {
 
   output: {
     filename: `${build}/vaadin-[name]-[contenthash].cache.js`,
-    path: mavenOutputFolderForFlowBundledFiles,
-    publicPath: 'VAADIN/',
+    path: mavenOutputFolderForFlowBundledFiles
   },
 
   resolve: {
@@ -133,14 +135,6 @@ module.exports = {
     // Transpile with babel, and produce different bundles per browser
     new BabelMultiTargetPlugin({
       babel: {
-        plugins: [
-          // workaround for Safari 10 scope issue (https://bugs.webkit.org/show_bug.cgi?id=159270)
-          "@babel/plugin-transform-block-scoping",
-
-          // Edge does not support spread '...' syntax in object literals (#7321)
-          "@babel/plugin-proposal-object-rest-spread"
-        ],
-
         presetOptions: {
           useBuiltIns: false // polyfills are provided from webcomponents-loader.js
         }
