@@ -5,7 +5,7 @@
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@vaadin/flow-deps": "./target/frontend",
-    "tippy.js": "5.2.1"
+    "tippy.js": "6.1.0"
   },
   "devDependencies": {
     "webpack": "4.30.0",
