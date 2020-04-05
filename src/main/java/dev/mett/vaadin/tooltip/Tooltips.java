@@ -45,6 +45,7 @@ public final class Tooltips implements Serializable {
     public interface JS_METHODS {
         String SET_TOOLTIP = "return window.tooltips.setTooltip($0,$1)";
         String UPDATE_TOOLTIP = "window.tooltips.updateTooltip($0,$1)";
+        String CLOSE_TOOLTIP_FORCED = "window.tooltips.closeTooltipForced($0)";
         String REMOVE_TOOLTIP = "window.tooltips.removeTooltip($0,$1)";
     }
 
@@ -132,9 +133,10 @@ public final class Tooltips implements Serializable {
             ensureCssClassIsSet(state);
 
             if (attached) {
-                TooltipsUtil.securelyAccessUI(ui,
-                        () -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip())
-                                .then(json -> setTippyId(state, json)));
+                TooltipsUtil.securelyAccessUI(
+                        ui,
+                        () -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()).then(json -> setTippyId(state, json))
+                );
             }
             // else: automatically uses the new value upon attach
 
@@ -150,7 +152,10 @@ public final class Tooltips implements Serializable {
                 ensureCssClassIsSet(state);
 
                 page.executeJs(JS_METHODS.SET_TOOLTIP, state.getCssClass(), state.getTooltip())
-                        .then(json -> setTippyId(state, json), err -> log.fine(() -> "Tooltips: js error: " + err));
+                        .then(
+                                json -> setTippyId(state, json),
+                                err -> log.fine(() -> "Tooltips: js error: " + err)
+                        );
             });
 
             if (attached) {
@@ -162,7 +167,8 @@ public final class Tooltips implements Serializable {
 
             // 3. automatic deregistration
             Registration detachReg = component.addDetachListener(
-                    evt -> TooltipsUtil.securelyAccessUI(ui, () -> deregisterTooltip(state, ui, Optional.empty())));
+                    evt -> TooltipsUtil.securelyAccessUI(ui, () -> closeFrontendTooltip(state, Optional.empty()))
+            );
             state.setDetachReg(new WeakReference<>(detachReg));
         }
     }
@@ -188,13 +194,26 @@ public final class Tooltips implements Serializable {
             TooltipStateData state = getTooltipState(component, false);
             if (state != null && state.getCssClass() != null) {
 
-                deregisterTooltip(state, ui, Optional.of(json -> {
+                deregisterTooltip(state, Optional.of(json -> {
                     removeTooltipState(state);
                     component.removeClassName(state.getCssClass());
                     ComponentUtil.setData(component, COMPONENT_TOOLTIP_ID, null);
                 }));
             }
         }
+    }
+
+    /**
+     * Closes tooltips that are still open.
+     *
+     * @param state
+     * @param afterFrontendDeregistration
+     */
+    public void closeFrontendTooltip(
+            final TooltipStateData state,
+            final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
+    ) {
+        callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, state, afterFrontendDeregistration);
     }
 
     /**
@@ -205,16 +224,27 @@ public final class Tooltips implements Serializable {
      * @param ui
      * @param afterFrontendDeregistration
      */
-    private void deregisterTooltip(final TooltipStateData state, final UI ui,
-            final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration) {
+    private void deregisterTooltip(
+            final TooltipStateData state,
+            final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
+    ) {
+        callJs(JS_METHODS.REMOVE_TOOLTIP, state, afterFrontendDeregistration);
+    }
 
+    private void callJs(
+            String function,
+            final TooltipStateData state,
+            final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
+    ) {
         Integer tippyId = state.getTippyId();
         if (tippyId != null) {
             String uniqueClassName = state.getCssClass();
             TooltipsUtil.securelyAccessUI(ui, () -> {
-                ui.getPage().executeJs(JS_METHODS.REMOVE_TOOLTIP, uniqueClassName, tippyId)
+                ui.getPage()
+                        .executeJs(function, uniqueClassName, tippyId)
                         .then(afterFrontendDeregistration.orElse(nothing -> {
-                            /* nothing */}));
+                            /* nothing */}
+                        ));
             });
 
         } else {
@@ -235,8 +265,10 @@ public final class Tooltips implements Serializable {
             ComponentUtil.setData(comp, COMPONENT_TOOLTIP_ID, tooltipID);
         }
         long tooltipId = tooltipID;
-        return tooltipStorage.computeIfAbsent(tooltipID,
-                k -> new TooltipStateData(tooltipId, new WeakReference<>(comp)));
+        return tooltipStorage.computeIfAbsent(
+                tooltipID,
+                k -> new TooltipStateData(tooltipId, new WeakReference<>(comp))
+        );
     }
 
     private boolean removeTooltipState(final TooltipStateData state) {
@@ -267,8 +299,10 @@ public final class Tooltips implements Serializable {
     private static void ensureCssClassIsSet(final TooltipStateData state) {
         HasStyle comp = (HasStyle) state.getComponent().get();
 
-        if (comp != null && state.getCssClass() != null && comp.getClassName() != null
-                && !comp.getClassName().contains(state.getCssClass())) {
+        if (
+            comp != null && state.getCssClass() != null && comp.getClassName() != null
+                    && !comp.getClassName().contains(state.getCssClass())
+        ) {
             comp.addClassName(state.getCssClass());
         }
     }

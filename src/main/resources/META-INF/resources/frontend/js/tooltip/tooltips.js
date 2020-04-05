@@ -89,14 +89,9 @@ window.tooltips = {
 		},
 		
 		removeTooltip: function(classname, tooltipId){
-			/* tippy fails to remove tooltips whose registered component 
-			   gets removed during the open animation */
-			const lostTooltip = document.getElementById('tippy-' + tooltipId);
-			if(lostTooltip) {
-				lostTooltip.parentElement._tippy.destroy();
-			}
+			window.tooltips.closeTooltipForced(tooltipId);
 			
-			/* destroy frontend tooltip */
+			/* destroy frontend tooltip on the element */
 			this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
 				if(tooltipElement) tooltipElement._tippy.destroy();
@@ -105,4 +100,14 @@ window.tooltips = {
 				console.debug("removeTooltip: " + err);	
 			})
 		},
+		
+		/* cleans up if a tooltip is open */
+		closeTooltipForced: function(tooltipId) {
+			/* tippy fails to remove tooltips whose registered component 
+			   gets removed during the open animation */
+			const lostTooltip = document.getElementById('tippy-' + tooltipId);
+			if(lostTooltip) {
+				lostTooltip.parentElement._tippy.destroy();
+			}
+		}
 }
