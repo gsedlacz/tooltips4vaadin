@@ -92,7 +92,9 @@ window.tooltips = {
 			/* tippy fails to remove tooltips whose registered component 
 			   gets removed during the open animation */
 			const lostTooltip = document.getElementById('tippy-' + tooltipId);
-			if(lostTooltip) lostTooltip._tippy.destroy();
+			if(lostTooltip) {
+				lostTooltip.parentElement._tippy.destroy();
+			}
 			
 			/* destroy frontend tooltip */
 			this.getElementFaulttolerant(classname)
