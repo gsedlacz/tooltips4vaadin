@@ -60,14 +60,14 @@ enum TooltipsCleaner{
                 Map<Long, TooltipStateData> tooltipStorage = Tooltips.get(ui).getTooltipStorage();
                 
                 // debug output
-                log.log(Level.FINEST, () -> "TooltipsCleaner: size pre-clean: " + tooltipStorage.size() + " | UI: " + ui);
+//                log.log(Level.FINEST, () -> "TooltipsCleaner: size pre-clean: " + tooltipStorage.size() + " | UI: " + ui);
                 
                 tooltipStorage.entrySet()
                               .removeIf(entry -> 
                                   entry.getValue().getComponent().get() == null);
                 
                 // debug output
-                log.log(Level.FINEST, () -> "TooltipsCleaner: size post-clean: " + tooltipStorage.size() + " | UI: " + ui);
+//                log.log(Level.FINEST, () -> "TooltipsCleaner: size post-clean: " + tooltipStorage.size() + " | UI: " + ui);
             }
         }
     }
