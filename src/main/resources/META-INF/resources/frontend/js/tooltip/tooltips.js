@@ -1,4 +1,5 @@
-import tippy from 'tippy.js/dist/tippy-bundle.esm';
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 
 window.tooltips = {
