@@ -1,7 +1,8 @@
 # Tooltips4Vaadin
 This plugin allows you to define proper tooltips.
 
-![Tooltip demo did not load.](https://gitlab.com/gsedlacz/tooltips4vaadin/raw/master/misc/demo.png "Tooltip demo")
+![Tooltip example image did not load.](https://gitlab.com/gsedlacz/tooltips4vaadin/raw/master/misc/demo.png "Tooltip demo")
+
 
 ## Official Download
 [Vaadin Directory](https://vaadin.com/directory/component/tooltips4vaadin)
@@ -33,11 +34,11 @@ class MyComp extends Component implements HasTooltip {
 ```
 
 ## Browser Compatibilty
-This library should work nicely with any modern browser but Chrome and Firefox were used during testting.
+This library should work nicely with any modern browser but Chrome and Firefox were used during testing.
 
 ## Credit
 This plugin makes use of these libraries:
-1. tippy.js (license: MIT, version. 5.1.4, URL: https://github.com/atomiks/tippyjs)
+1. tippy.js (license: MIT, version. 6.1.0, URL: https://github.com/atomiks/tippyjs)
 2. Project Lombok (license: MIT, version 1.18.8, URL: https://projectlombok.org/)
 3. retry (license: MIT, version: 0.12.0, URL: https://www.npmjs.com/package/retry)
 
