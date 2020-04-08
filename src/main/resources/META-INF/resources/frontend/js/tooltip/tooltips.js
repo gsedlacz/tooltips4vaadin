@@ -47,7 +47,6 @@ window.tooltips = {
 		/* ### INTERACTION ### */
 		
 		setTooltip: function (classname, tooltip){
-			//const tooltipElement = window.tooltips.getElement(classname);
 			return this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
 				return window.tooltips.setTooltipToElement(tooltipElement, tooltip);
@@ -61,7 +60,8 @@ window.tooltips = {
 		setTooltipToElement: function(tooltipElement, tooltip){
 			if(tooltipElement) {
 				tippy(tooltipElement, {
-					content: tooltip
+					content: tooltip,
+					allowHTML: true
 				});
 			
 				// this id will be used by tooltips DOM id associated with the tooltipElement
@@ -71,7 +71,6 @@ window.tooltips = {
 		},
 		
 		updateTooltip: function (classname, tooltip){
-			//const tooltipElement = window.tooltips.getElement(classname);
 			return this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
 				if(tooltipElement) {
