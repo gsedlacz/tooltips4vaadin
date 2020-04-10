@@ -107,7 +107,7 @@ window.tooltips = {
 			   gets removed during the open animation */
 			const lostTooltip = document.getElementById('tippy-' + tooltipId);
 			if(lostTooltip) {
-				lostTooltip.parentElement._tippy.destroy();
+				lostTooltip._tippy.destroy();
 			}
 		}
 }

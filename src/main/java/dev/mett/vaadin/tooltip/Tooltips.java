@@ -213,7 +213,7 @@ public final class Tooltips implements Serializable {
             final TooltipStateData state,
             final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
     ) {
-        callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, state, afterFrontendDeregistration);
+        callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, afterFrontendDeregistration, state.getTippyId());
     }
 
     /**
@@ -228,29 +228,30 @@ public final class Tooltips implements Serializable {
             final TooltipStateData state,
             final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
     ) {
-        callJs(JS_METHODS.REMOVE_TOOLTIP, state, afterFrontendDeregistration);
-    }
-
-    private void callJs(
-            String function,
-            final TooltipStateData state,
-            final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
-    ) {
         Integer tippyId = state.getTippyId();
         if (tippyId != null) {
             String uniqueClassName = state.getCssClass();
-            TooltipsUtil.securelyAccessUI(ui, () -> {
-                ui.getPage()
-                        .executeJs(function, uniqueClassName, tippyId)
-                        .then(afterFrontendDeregistration.orElse(nothing -> {
-                            /* nothing */}
-                        ));
-            });
+
+            callJs(JS_METHODS.REMOVE_TOOLTIP, afterFrontendDeregistration, uniqueClassName, tippyId);
 
         } else {
             log.fine(() -> "Tippy frontend id is null for " + state);
             afterFrontendDeregistration.ifPresent(task -> task.accept(null));
         }
+    }
+
+    private void callJs(
+            String function,
+            final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration,
+            Serializable... parameters
+    ) {
+        TooltipsUtil.securelyAccessUI(ui, () -> {
+            ui.getPage()
+                    .executeJs(function, parameters)
+                    .then(afterFrontendDeregistration.orElse(nothing -> {
+                        /* nothing */}
+                    ));
+        });
     }
 
     /* *** UTIL *** */
