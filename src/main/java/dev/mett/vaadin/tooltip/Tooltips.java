@@ -204,10 +204,11 @@ public final class Tooltips implements Serializable {
     }
 
     /**
-     * Closes tooltips that are still open.
+     * Close a tooltip if it is still open.
      *
-     * @param state
-     * @param afterFrontendDeregistration
+     * @param state                       {@link TooltipStateData}
+     * @param afterFrontendDeregistration an optional action to execute once the
+     *                                    deregistration has finished
      */
     public void closeFrontendTooltip(
             final TooltipStateData state,
