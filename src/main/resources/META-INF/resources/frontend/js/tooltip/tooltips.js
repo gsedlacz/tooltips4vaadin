@@ -1,4 +1,4 @@
-import tippy from 'tippy.js';
+import tippy, {followCursor} from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 
@@ -46,10 +46,10 @@ window.tooltips = {
 		
 		/* ### INTERACTION ### */
 		
-		setTooltip: function (classname, tooltip){
+		setTooltip: function (classname, config){
 			return this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
-				return window.tooltips.setTooltipToElement(tooltipElement, tooltip);
+				return window.tooltips.setTooltipToElement(tooltipElement, config);
 			})
 			.catch(err => {
 				console.debug("setTooltip: " + err);
@@ -57,12 +57,14 @@ window.tooltips = {
 			})
 		},
 		
-		setTooltipToElement: function(tooltipElement, tooltip){
+		setTooltipToElement: function(tooltipElement, config){
 			if(tooltipElement) {
-				tippy(tooltipElement, {
-					content: tooltip,
-					allowHTML: true
-				});
+				// enables required plugins
+				if(config.followCursor) {
+					config.plugins = [followCursor];
+				}
+				
+				tippy(tooltipElement, config);
 			
 				// this id will be used by tooltips DOM id associated with the tooltipElement
 				return tooltipElement._tippy.id;
@@ -70,16 +72,16 @@ window.tooltips = {
 			console.debug(tooltipElement)
 		},
 		
-		updateTooltip: function (classname, tooltip){
+		updateTooltip: function (classname, config){
 			return this.getElementFaulttolerant(classname)
 			.then(tooltipElement => {
 				if(tooltipElement) {
 					if(tooltipElement._tippy){
-						tooltipElement._tippy.setContent(tooltip);
+						tooltipElement._tippy.setContent(config.content); //TODO: update entire config
 					
 					} else {
 						// lost its _tippy sub entry for some reason
-						return window.tooltips.setTooltipToElement(tooltipElement, tooltip);
+						return window.tooltips.setTooltipToElement(tooltipElement, config);
 					}
 				}
 			})

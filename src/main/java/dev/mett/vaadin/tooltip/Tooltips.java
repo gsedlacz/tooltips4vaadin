@@ -16,6 +16,7 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
 
+import dev.mett.vaadin.tooltip.config.TooltipsConfiguration;
 import elemental.json.JsonNull;
 import elemental.json.JsonValue;
 
@@ -113,10 +114,32 @@ public final class Tooltips implements Serializable {
      * @param <T>       requires the supplied {@link Component} to implement
      *                  {@link HasStyle}
      * @param component the {@link Component} that is supposed to have a tooltip
-     * @param tooltip   the tooltips information
+     * @param tooltip   the tooltips text
+     *
+     * @see #setTooltip(Component, TooltipsConfiguration)
      */
     public <T extends Component & HasStyle> void setTooltip(final T component, String tooltip) {
-        if (component == null || tooltip == null || tooltip.isEmpty()) {
+        setTooltip(component, new TooltipsConfiguration(tooltip));
+    }
+
+    /**
+     * Sets a tooltip to the supplied {@link Component}.<br>
+     * Automatically deregisters itself upon the components detach.<br>
+     *
+     * @param <T>                   requires the supplied {@link Component} to
+     *                              implement {@link HasStyle}
+     * @param component             the {@link Component} that is supposed to have a
+     *                              tooltip
+     * @param tooltipsConfiguration {@link TooltipsConfiguration} the configuration
+     *                              defining the tooltip
+     *
+     * @see #setTooltip(Component, String)
+     */
+    public <T extends Component & HasStyle> void setTooltip(
+            final T component,
+            TooltipsConfiguration tooltipsConfiguration
+    ) {
+        if (component == null || tooltipsConfiguration == null) {
             return;
         }
 
@@ -124,9 +147,7 @@ public final class Tooltips implements Serializable {
         final Page page = ui.getPage();
         final TooltipStateData state = getTooltipState(component, true);
 
-        // newlines to html
-        tooltip = tooltip.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
-        state.setTooltip(tooltip);
+        state.setTooltipConfig(tooltipsConfiguration);
 
         if (state.getCssClass() != null) {
             // update
@@ -135,7 +156,8 @@ public final class Tooltips implements Serializable {
             if (attached) {
                 TooltipsUtil.securelyAccessUI(
                         ui,
-                        () -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltip()).then(json -> setTippyId(state, json))
+                        () -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltipConfig())
+                                .then(json -> setTippyId(state, json))
                 );
             }
             // else: automatically uses the new value upon attach
@@ -151,7 +173,7 @@ public final class Tooltips implements Serializable {
             Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
                 ensureCssClassIsSet(state);
 
-                page.executeJs(JS_METHODS.SET_TOOLTIP, state.getCssClass(), state.getTooltip())
+                page.executeJs(JS_METHODS.SET_TOOLTIP, state.getCssClass(), state.getTooltipConfig())
                         .then(
                                 json -> setTippyId(state, json),
                                 err -> log.fine(() -> "Tooltips: js error: " + err)

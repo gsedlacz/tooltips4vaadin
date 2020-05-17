@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
 
+import dev.mett.vaadin.tooltip.config.TooltipsConfiguration;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public class TooltipStateData implements Serializable {
     private String cssClass;
     @Getter
     @Setter
-    private String tooltip;
+    private TooltipsConfiguration tooltipConfig;
     @Getter
     private final long tooltipId;
     @Getter
