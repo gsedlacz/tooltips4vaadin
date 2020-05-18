@@ -1,32 +1,41 @@
-package dev.mett.vaadin.tooltip.config;
+package dev.mett.vaadin.tooltip;
 
 import java.io.Serializable;
 
+import com.vaadin.flow.internal.JsonSerializer;
+
+import elemental.json.JsonObject;
 import lombok.Data;
 
-@Data
 /**
  * Allows you to customize tooltips properties.<br>
- * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/
+ * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/<br>
+ * <br>
+ * NOTE: The configuration wont update on its own. Call to
+ * {@link Tooltips#setTooltip(com.vaadin.flow.component.Component, TooltipConfiguration)}
+ * in order to apply changes.
  *
  * @author Gerrit Sedlaczek
  */
-public class TooltipsConfiguration implements Serializable {
+@Data
+public class TooltipConfiguration implements Serializable {
     private static final long serialVersionUID = 7099314666522619319L;
 
     /**
-     * Creates a new tooltip configuration.
-     *
-     * @param content the initial text of the tooltip (<code>null</code> is not
-     *                supported.
+     * INTERNAL
      */
-    public TooltipsConfiguration(String content) {
-        if (content == null || content.isEmpty())
-            throw new RuntimeException("The content of a tooltip may never be null or empty");
+    TooltipConfiguration() {
+        /* internal constructor */
+    }
 
-        // newlines to html
-        content = content.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
-        this.content = content;
+    /**
+     * Creates a new {@link TooltipConfiguration}.<br>
+     * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/
+     *
+     * @param text the tooltips text
+     */
+    public TooltipConfiguration(String text) {
+        setContent(text);
     }
 
     // TODO: support:
@@ -36,13 +45,15 @@ public class TooltipsConfiguration implements Serializable {
     // 4. appendTo
     // 5. aria
 
+    // TODO: use enums
+
     /** Defines if the content is rendered as HTML or plain text */
     private boolean allowHTML = true;
 //    private boolean animateFill; //TODO: requires CSS import
     /** Defines if the tooltip points to its parent element */
     private boolean arrow; // TODO: support 1. SVG 2. Element
     /** This is the tooltips text itself */
-    private String content;
+    private String content = "";
     /** Delay in ms before the tooltip is shown or hidden */
     private int delay; // TODO: individual in and out values
     /** Duration of transition animations in ms */
@@ -77,5 +88,23 @@ public class TooltipsConfiguration implements Serializable {
     /** JS events that should trigger opening the tooltip (separated by spaces) */
     private String trigger;
     /** CSS z-index */
-    private int zIndex;
+//    private int zIndex;
+
+    /**
+     * Defines the tooltips text.
+     *
+     * @param content text
+     */
+    public void setContent(String content) {
+        if (content == null || content.isEmpty())
+            throw new RuntimeException("The content of a tooltip may never be null or empty");
+
+        // newlines to html
+        content = content.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
+        this.content = content;
+    }
+
+    public JsonObject toJson() {
+        return (JsonObject) JsonSerializer.toJson(this);
+    }
 }

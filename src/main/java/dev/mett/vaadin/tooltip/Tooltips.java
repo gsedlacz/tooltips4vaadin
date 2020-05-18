@@ -16,7 +16,6 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
 
-import dev.mett.vaadin.tooltip.config.TooltipsConfiguration;
 import elemental.json.JsonNull;
 import elemental.json.JsonValue;
 
@@ -108,46 +107,64 @@ public final class Tooltips implements Serializable {
     /* *** SET / MODIFY *** */
 
     /**
-     * Sets a tooltip to the supplied {@link Component}.<br>
-     * Automatically deregisters itself upon the components detach.<br>
+     *
      *
      * @param <T>       requires the supplied {@link Component} to implement
      *                  {@link HasStyle}
      * @param component the {@link Component} that is supposed to have a tooltip
      * @param tooltip   the tooltips text
-     *
-     * @see #setTooltip(Component, TooltipsConfiguration)
      */
-    public <T extends Component & HasStyle> void setTooltip(final T component, String tooltip) {
-        setTooltip(component, new TooltipsConfiguration(tooltip));
+    public <T extends Component & HasStyle> void setTooltip(
+            final T component,
+            final String tooltip
+    ) {
+        TooltipStateData state = getTooltipState(component, true);
+        state.getTooltipConfig().setContent(tooltip);
+        setTooltip(component, state);
+    }
+
+    /**
+     *
+     *
+     * @param <T>                  requires the supplied {@link Component} to
+     *                             implement {@link HasStyle}
+     * @param component            the {@link Component} that is supposed to have a
+     *                             tooltip
+     * @param tooltipConfiguration {@link TooltipConfiguration} the configuration of
+     *                             the tooltip
+     */
+    public <T extends Component & HasStyle> void setTooltip(
+            final T component,
+            final TooltipConfiguration tooltipConfiguration
+    ) {
+        TooltipStateData state = getTooltipState(component, true);
+        state.setTooltipConfig(tooltipConfiguration);
+        setTooltip(component, state);
     }
 
     /**
      * Sets a tooltip to the supplied {@link Component}.<br>
      * Automatically deregisters itself upon the components detach.<br>
      *
-     * @param <T>                   requires the supplied {@link Component} to
-     *                              implement {@link HasStyle}
-     * @param component             the {@link Component} that is supposed to have a
-     *                              tooltip
-     * @param tooltipsConfiguration {@link TooltipsConfiguration} the configuration
-     *                              defining the tooltip
+     * @param <T>       requires the supplied {@link Component} to implement
+     *                  {@link HasStyle}
+     * @param component the {@link Component} that is supposed to have a tooltip
+     * @param state     {@link TooltipStateData}
      *
-     * @see #setTooltip(Component, String)
+     * @see #setTooltip(Component, TooltipConfiguration)
      */
-    public <T extends Component & HasStyle> void setTooltip(
+    private <T extends Component & HasStyle> void setTooltip(
             final T component,
-            TooltipsConfiguration tooltipsConfiguration
+            final TooltipStateData state
     ) {
-        if (component == null || tooltipsConfiguration == null) {
-            return;
+        if (component == null) {
+            throw new IllegalArgumentException(
+                    "Tooltips4Vaadin requires a non null component in order to set a tooltip"
+            );
         }
 
         final boolean attached = component.getElement().getNode().isAttached();
         final Page page = ui.getPage();
-        final TooltipStateData state = getTooltipState(component, true);
-
-        state.setTooltipConfig(tooltipsConfiguration);
 
         if (state.getCssClass() != null) {
             // update
@@ -173,7 +190,7 @@ public final class Tooltips implements Serializable {
             Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
                 ensureCssClassIsSet(state);
 
-                page.executeJs(JS_METHODS.SET_TOOLTIP, state.getCssClass(), state.getTooltipConfig())
+                page.executeJs(JS_METHODS.SET_TOOLTIP, state.getCssClass(), state.getTooltipConfig().toJson())
                         .then(
                                 json -> setTippyId(state, json),
                                 err -> log.fine(() -> "Tooltips: js error: " + err)
@@ -232,7 +249,7 @@ public final class Tooltips implements Serializable {
      * @param afterFrontendDeregistration an optional action to execute once the
      *                                    deregistration has finished
      */
-    public void closeFrontendTooltip(
+    private void closeFrontendTooltip(
             final TooltipStateData state,
             final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
     ) {
@@ -263,6 +280,25 @@ public final class Tooltips implements Serializable {
         }
     }
 
+    /* *** CONFIG *** */
+    /**
+     * Gives access to the {@link TooltipConfiguration} of a given component.
+     *
+     * @param <T>       a {@link Component} implementing {@link HasStyle}
+     * @param component T your {@link Component}
+     * @return {@link Optional} of {@link TooltipConfiguration}
+     */
+    public <T extends Component & HasStyle> Optional<TooltipConfiguration> getConfiguration(T component) {
+        TooltipStateData state = getTooltipState(component, false);
+        if (state == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(state.getTooltipConfig());
+        }
+    }
+
+    /* *** UTIL *** */
+
     private void callJs(
             String function,
             final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration,
@@ -277,21 +313,19 @@ public final class Tooltips implements Serializable {
         });
     }
 
-    /* *** UTIL *** */
-
     private TooltipStateData getTooltipState(final Component comp, final boolean register) {
-        Long tooltipID = (Long) ComponentUtil.getData(comp, COMPONENT_TOOLTIP_ID);
-        if (tooltipID == null) {
+        Long tooltipId = (Long) ComponentUtil.getData(comp, COMPONENT_TOOLTIP_ID);
+        if (tooltipId == null) {
             if (!register) {
                 return null;
             }
-            tooltipID = tooltipIdGenerator.incrementAndGet();
-            ComponentUtil.setData(comp, COMPONENT_TOOLTIP_ID, tooltipID);
+            tooltipId = tooltipIdGenerator.incrementAndGet();
+            ComponentUtil.setData(comp, COMPONENT_TOOLTIP_ID, tooltipId);
         }
-        long tooltipId = tooltipID;
+        final long finalTooltipId = tooltipId;
         return tooltipStorage.computeIfAbsent(
-                tooltipID,
-                k -> new TooltipStateData(tooltipId, new WeakReference<>(comp))
+                tooltipId,
+                k -> new TooltipStateData(new TooltipConfiguration(), finalTooltipId, new WeakReference<>(comp))
         );
     }
 

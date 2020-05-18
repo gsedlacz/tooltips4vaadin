@@ -6,12 +6,13 @@ import java.lang.ref.WeakReference;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
 
-import dev.mett.vaadin.tooltip.config.TooltipsConfiguration;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@RequiredArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class TooltipStateData implements Serializable {
     private static final long serialVersionUID = 1718507240810676034L;
 
@@ -24,7 +25,7 @@ public class TooltipStateData implements Serializable {
     private String cssClass;
     @Getter
     @Setter
-    private TooltipsConfiguration tooltipConfig;
+    private TooltipConfiguration tooltipConfig;
     @Getter
     private final long tooltipId;
     @Getter
@@ -32,6 +33,15 @@ public class TooltipStateData implements Serializable {
     private Integer tippyId;
     @Getter
     private final transient WeakReference<Component> component;
+
+    /**
+     * INTERNAL
+     */
+    TooltipStateData(TooltipConfiguration config, long tooltipId, WeakReference<Component> component) {
+        this.tooltipConfig = config;
+        this.tooltipId = tooltipId;
+        this.component = component;
+    }
 
     public void setAttachReg(WeakReference<Registration> attachReg) {
         setRegistration(this.attachReg, attachReg);
@@ -49,21 +59,5 @@ public class TooltipStateData implements Serializable {
             }
         }
         thisReg = attachReg;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("TooltipStateData [tooltipId=");
-        sb.append(tooltipId);
-        sb.append(", tippyId=");
-        sb.append(tippyId);
-        sb.append(", component=");
-
-        Component comp = this.component != null ? this.component.get() : null;
-        sb.append(comp != null ? comp.getClass() : null);
-
-        return sb.toString();
     }
 }
