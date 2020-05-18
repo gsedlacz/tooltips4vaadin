@@ -173,7 +173,11 @@ public final class Tooltips implements Serializable {
             if (attached) {
                 TooltipsUtil.securelyAccessUI(
                         ui,
-                        () -> page.executeJs(JS_METHODS.UPDATE_TOOLTIP, state.getCssClass(), state.getTooltipConfig())
+                        () -> page.executeJs(
+                                JS_METHODS.UPDATE_TOOLTIP,
+                                state.getCssClass(),
+                                state.getTooltipConfig().toJson()
+                        )
                                 .then(json -> setTippyId(state, json))
                 );
             }
@@ -190,7 +194,11 @@ public final class Tooltips implements Serializable {
             Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
                 ensureCssClassIsSet(state);
 
-                page.executeJs(JS_METHODS.SET_TOOLTIP, state.getCssClass(), state.getTooltipConfig().toJson())
+                page.executeJs(
+                        JS_METHODS.SET_TOOLTIP,
+                        state.getCssClass(),
+                        state.getTooltipConfig().toJson()
+                )
                         .then(
                                 json -> setTippyId(state, json),
                                 err -> log.fine(() -> "Tooltips: js error: " + err)

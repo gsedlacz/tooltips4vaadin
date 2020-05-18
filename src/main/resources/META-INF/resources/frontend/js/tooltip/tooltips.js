@@ -77,7 +77,7 @@ window.tooltips = {
 			.then(tooltipElement => {
 				if(tooltipElement) {
 					if(tooltipElement._tippy){
-						tooltipElement._tippy.setContent(config.content); //TODO: update entire config
+						tooltipElement._tippy.setProps(config);
 					
 					} else {
 						// lost its _tippy sub entry for some reason

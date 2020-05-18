@@ -2,8 +2,6 @@ package dev.mett.vaadin.tooltip;
 
 import java.io.Serializable;
 
-import com.vaadin.flow.internal.JsonSerializer;
-
 import elemental.json.JsonObject;
 import lombok.Data;
 
@@ -48,47 +46,47 @@ public class TooltipConfiguration implements Serializable {
     // TODO: use enums
 
     /** Defines if the content is rendered as HTML or plain text */
-    private boolean allowHTML = true;
+    private Boolean allowHTML = true;
 //    private boolean animateFill; //TODO: requires CSS import
     /** Defines if the tooltip points to its parent element */
-    private boolean arrow; // TODO: support 1. SVG 2. Element
+    private Boolean arrow; // TODO: support 1. SVG 2. Element
     /** This is the tooltips text itself */
     private String content = "";
     /** Delay in ms before the tooltip is shown or hidden */
-    private int delay; // TODO: individual in and out values
+    private Integer delay; // TODO: individual in and out values
     /** Duration of transition animations in ms */
-    private int duration; // TODO: individual in and out
+    private Integer duration; // TODO: individual in and out
     /**
      * Defines the positon of a tooltip relative to its element and the cursor.<br>
      * Supported values: 1. 'horizontal' 2. 'vertical' 3. 'initial'
      */
     private String followCursor; // TODO: support booleans
     /** Determines when the tooltip is shown / hidden */
-    private boolean hideOnClick; // TODO: support 'toggle'
+    private Boolean hideOnClick; // TODO: support 'toggle'
     /**
      * Determines if a spring-like animation is applied to the transition animation
      */
-    private boolean inertia;
+    private Boolean inertia;
     /** Defines if content of a tooltip can be selected */
-    private boolean interactive;
+    private Boolean interactive;
     /**
      * Defines the invisible space around the tooltip whithin which the mouse wont
      * leave the tooltip (in px)
      */
-    private int interactiveBorder;
+    private Integer interactiveBorder;
     /**
      * The time in ms until the tooltip disappears after the mouse left the tooltips
      * area
      */
-    private int interactiveDebounce;
+    private Integer interactiveDebounce;
     /** The maximum width of a tooltip in px */
-    private int maxWidth; // TODO: support 'none'
+    private Integer maxWidth; // TODO: support 'none'
     /** If the tooltip should be shown right after its creation */
-    private boolean showOnCreate;
+    private Boolean showOnCreate;
     /** JS events that should trigger opening the tooltip (separated by spaces) */
     private String trigger;
     /** CSS z-index */
-//    private int zIndex;
+    private Integer zIndex;
 
     /**
      * Defines the tooltips text.
@@ -105,6 +103,6 @@ public class TooltipConfiguration implements Serializable {
     }
 
     public JsonObject toJson() {
-        return (JsonObject) JsonSerializer.toJson(this);
+        return (JsonObject) TooltipsUtil.convertToJson(this);
     }
 }
