@@ -2,6 +2,7 @@ package dev.mett.vaadin.tooltip;
 
 import java.io.Serializable;
 
+import dev.mett.vaadin.tooltip.exception.InvalidTooltipContentException;
 import elemental.json.JsonObject;
 import lombok.Data;
 
@@ -95,7 +96,7 @@ public class TooltipConfiguration implements Serializable {
      */
     public void setContent(String content) {
         if (content == null || content.isEmpty())
-            throw new RuntimeException("The content of a tooltip may never be null or empty");
+            throw new InvalidTooltipContentException("The content of a tooltip may never be null or empty");
 
         // newlines to html
         content = content.replaceAll("(\\r\\n|\\r|\\n)", "<br>");
