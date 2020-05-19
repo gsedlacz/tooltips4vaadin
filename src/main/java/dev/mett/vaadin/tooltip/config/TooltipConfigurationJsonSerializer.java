@@ -1,25 +1,24 @@
 package dev.mett.vaadin.tooltip.config;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Optional;
 
 import com.vaadin.flow.component.JsonSerializable;
-import com.vaadin.flow.internal.JsonSerializer;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
-import elemental.json.JsonObject;
 import elemental.json.JsonValue;
+import elemental.json.impl.JreJsonNull;
 
 public class TooltipConfigurationJsonSerializer {
     public static JsonValue toJson(Object bean) {
+        return toJson(bean, false);
+    }
+
+    private static JsonValue toJson(Object bean, final boolean isNullabel) {
         if (bean == null) {
-            return null;
+            return isNullabel ? new JreJsonNull() : null;
         }
         if (bean instanceof Collection) {
             return toJson((Collection<?>) bean);
@@ -27,39 +26,26 @@ public class TooltipConfigurationJsonSerializer {
         if (bean.getClass().isArray()) {
             return toJsonArray(bean);
         }
-        if (bean instanceof JsonSerializable) {
-            return ((JsonSerializable) bean).toJson();
-        }
 
         Optional<JsonValue> simpleType = tryToConvertToSimpleType(bean);
         if (simpleType.isPresent()) {
             return simpleType.get();
         }
 
-        try {
-            JsonObject json = Json.createObject();
-            BeanInfo info = Introspector.getBeanInfo(bean.getClass());
-            for (PropertyDescriptor pd : info.getPropertyDescriptors()) {
-                if ("class".equals(pd.getName())) {
-                    continue;
-                }
-                Method reader = pd.getReadMethod();
-                if (reader != null) {
-                    JsonValue beanValue = toJson(reader.invoke(bean));
-                    if (beanValue != null)
-                        json.put(pd.getName(), beanValue);
-                }
-            }
-
-            return json;
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Could not serialize object of type "
-                            + bean.getClass()
-                            + " to JsonValue",
-                    e
-            );
+        if (bean instanceof JsonConvertible) {
+            return ((JsonConvertible) bean).toJson();
         }
+        if (bean instanceof JsonSerializable) {
+            return ((JsonSerializable) bean).toJson();
+        }
+        if (bean instanceof Enum) {
+            return Json.create(((Enum<?>) bean).name());
+        }
+        if (bean instanceof JsonValue) {
+            return (JsonValue) bean;
+        }
+
+        return null;
     }
 
     public static JsonArray toJson(Collection<?> beans) {
@@ -69,7 +55,7 @@ public class TooltipConfigurationJsonSerializer {
         }
 
         beans.stream()
-                .map(JsonSerializer::toJson)
+                .map(bean -> TooltipConfigurationJsonSerializer.toJson(bean, true))
                 .forEachOrdered(json -> array.set(array.length(), json));
         return array;
     }
@@ -78,7 +64,7 @@ public class TooltipConfigurationJsonSerializer {
         int length = Array.getLength(javaArray);
         JsonArray array = Json.createArray();
         for (int i = 0; i < length; i++) {
-            JsonValue beanValue = toJson(Array.get(javaArray, i));
+            JsonValue beanValue = toJson(Array.get(javaArray, i), true);
             if (beanValue != null)
                 array.set(i, beanValue);
         }
@@ -97,12 +83,6 @@ public class TooltipConfigurationJsonSerializer {
         }
         if (bean instanceof Character) {
             return Optional.of(Json.create(Character.toString((char) bean)));
-        }
-        if (bean instanceof Enum) {
-            return Optional.of(Json.create(((Enum<?>) bean).name()));
-        }
-        if (bean instanceof JsonValue) {
-            return Optional.of((JsonValue) bean);
         }
         return Optional.empty();
     }
