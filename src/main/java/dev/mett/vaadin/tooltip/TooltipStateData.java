@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
 
+import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import lombok.ToString;
 
 @ToString
 @EqualsAndHashCode
-public class TooltipStateData implements Serializable {
+class TooltipStateData implements Serializable {
     private static final long serialVersionUID = 1718507240810676034L;
 
     @Getter
@@ -43,11 +44,11 @@ public class TooltipStateData implements Serializable {
         this.component = component;
     }
 
-    public void setAttachReg(WeakReference<Registration> attachReg) {
+    void setAttachReg(WeakReference<Registration> attachReg) {
         setRegistration(this.attachReg, attachReg);
     }
 
-    public void setDetachReg(WeakReference<Registration> detachReg) {
+    void setDetachReg(WeakReference<Registration> detachReg) {
         setRegistration(this.detachReg, detachReg);
     }
 

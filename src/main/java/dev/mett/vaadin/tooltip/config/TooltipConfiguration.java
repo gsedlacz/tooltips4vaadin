@@ -1,7 +1,8 @@
-package dev.mett.vaadin.tooltip;
+package dev.mett.vaadin.tooltip.config;
 
 import java.io.Serializable;
 
+import dev.mett.vaadin.tooltip.Tooltips;
 import dev.mett.vaadin.tooltip.exception.InvalidTooltipContentException;
 import elemental.json.JsonObject;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class TooltipConfiguration implements Serializable {
     /**
      * INTERNAL
      */
-    TooltipConfiguration() {
+    public TooltipConfiguration() {
         /* internal constructor */
     }
 
@@ -104,6 +105,6 @@ public class TooltipConfiguration implements Serializable {
     }
 
     public JsonObject toJson() {
-        return (JsonObject) TooltipsUtil.convertToJson(this);
+        return (JsonObject) TooltipConfigurationJsonSerializer.toJson(this);
     }
 }

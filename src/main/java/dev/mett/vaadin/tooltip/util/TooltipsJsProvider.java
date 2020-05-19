@@ -1,4 +1,4 @@
-package dev.mett.vaadin.tooltip;
+package dev.mett.vaadin.tooltip.util;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
@@ -13,6 +13,11 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 @JsModule("./js/tooltip/tooltips.js")
 @CssImport("tippy.js/dist/tippy.css")
 @Tag("div")
+/**
+ * Responsible for including this plugins JS and CSS resources when deploying.
+ *
+ * @author Gerrit Sedlaczek
+ */
 public class TooltipsJsProvider extends Component {
     private static final long serialVersionUID = 3079421969338830944L;
 }

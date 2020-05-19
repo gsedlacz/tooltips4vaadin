@@ -5,8 +5,8 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
 
-import dev.mett.vaadin.tooltip.TooltipConfiguration;
 import dev.mett.vaadin.tooltip.Tooltips;
+import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 
 /**
  * Allows to define Tooltips more easily by adding this mixin interface.

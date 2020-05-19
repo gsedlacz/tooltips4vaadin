@@ -16,7 +16,10 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
 
+import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitializedException;
+import dev.mett.vaadin.tooltip.util.TooltipsJsProvider;
+import dev.mett.vaadin.tooltip.util.TooltipsUtil;
 import elemental.json.JsonNull;
 import elemental.json.JsonValue;
 
