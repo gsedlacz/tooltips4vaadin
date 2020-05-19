@@ -8,7 +8,7 @@ import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
 import dev.mett.vaadin.tooltip.Tooltips;
-import dev.mett.vaadin.tooltip.TooltipsAlreadyInitialized;
+import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitializedException;
 
 /**
  * This class provides an easy way to setup this library.<br>
@@ -30,7 +30,7 @@ public class TooltipsInitService implements VaadinServiceInitListener {
 			final UI ui = uiInit.getUI();
 			try {
 				new Tooltips(ui);
-			} catch (TooltipsAlreadyInitialized e) {
+			} catch (TooltipsAlreadyInitializedException e) {
 				log.log(Level.WARNING, "You have already initialized Tooltips for this UI: " + ui, new Throwable().fillInStackTrace());
 			}
 		});

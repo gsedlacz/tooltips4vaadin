@@ -16,6 +16,7 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
 
+import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitializedException;
 import elemental.json.JsonNull;
 import elemental.json.JsonValue;
 
@@ -86,11 +87,11 @@ public final class Tooltips implements Serializable {
     private final Map<Long, TooltipStateData> tooltipStorage = new ConcurrentHashMap<>();
     private final UI ui;
 
-    public Tooltips(UI ui) throws TooltipsAlreadyInitialized {
+    public Tooltips(UI ui) throws TooltipsAlreadyInitializedException {
         this.ui = ui;
 
         if (Tooltips.get(ui) != null) {
-            throw new TooltipsAlreadyInitialized();
+            throw new TooltipsAlreadyInitializedException();
         }
 
         // adds the scripts to the currentUI
