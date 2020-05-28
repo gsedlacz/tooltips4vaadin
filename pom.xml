@@ -6,7 +6,7 @@
 
 	<groupId>dev.mett.vaadin</groupId>
 	<artifactId>tooltip</artifactId>
-	<version>1.5.0-alpha</version>
+	<version>1.5.0</version>
 	<name>Tooltips4Vaadin</name>
 	<description>Proper tooltips for Vaadin Flow.</description>
 	<packaging>jar</packaging>
@@ -141,6 +141,14 @@
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.6.2</version>
+		    <scope>test</scope>
 		</dependency>
 	</dependencies>
 
