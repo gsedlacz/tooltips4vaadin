@@ -1,4 +1,4 @@
-import tippy, {followCursor} from 'tippy.js';
+import tippy, {followCursor, sticky} from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 
@@ -59,9 +59,14 @@ window.tooltips = {
 		
 		setTooltipToElement: function(tooltipElement, config){
 			if(tooltipElement) {
+				config.plugins = [];
+				
 				// enables required plugins
 				if(config.followCursor) {
-					config.plugins = [followCursor];
+					config.plugins.push(followCursor);
+				}
+				if(config.sticky) {
+					config.plugins.push(sticky);
 				}
 				
 				tippy(tooltipElement, config);

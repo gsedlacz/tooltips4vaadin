@@ -1,17 +1,27 @@
 package dev.mett.vaadin.tooltip.config;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.vaadin.flow.component.JsonSerializable;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
+import elemental.json.JsonFactory;
+import elemental.json.JsonObject;
 import elemental.json.JsonValue;
+import elemental.json.impl.JreJsonFactory;
 import elemental.json.impl.JreJsonNull;
+import elemental.json.impl.JreJsonObject;
 
 public class TooltipConfigurationJsonSerializer {
+    private final static Logger log = Logger.getLogger(TooltipConfigurationJsonSerializer.class.getName());
+    private final static JsonFactory jsonFactory = new JreJsonFactory();
+
     public static JsonValue toJson(Object bean) {
         return toJson(bean, false);
     }
@@ -45,7 +55,29 @@ public class TooltipConfigurationJsonSerializer {
             return (JsonValue) bean;
         }
 
-        return null;
+        return processFields(bean);
+    }
+
+    private static JsonObject processFields(Object bean) {
+        JsonObject json = new JreJsonObject(jsonFactory);
+
+        for (Field field : bean.getClass().getDeclaredFields()) {
+            String fieldName = field.getName();
+            if (fieldName.equals("serialVersionUID"))
+                continue;
+
+            field.setAccessible(true);
+            try {
+                JsonValue value = toJson(field.get(bean), false);
+                if (value != null)
+                    json.put(fieldName, value);
+
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                log.log(Level.FINER, "Faield to convert field=" + field + " of bean=" + bean);
+            }
+        }
+
+        return json;
     }
 
     public static JsonArray toJson(Collection<?> beans) {
@@ -71,7 +103,7 @@ public class TooltipConfigurationJsonSerializer {
         return array;
     }
 
-    static Optional<JsonValue> tryToConvertToSimpleType(Object bean) {
+    private static Optional<JsonValue> tryToConvertToSimpleType(Object bean) {
         if (bean instanceof String) {
             return Optional.of(Json.create((String) bean));
         }

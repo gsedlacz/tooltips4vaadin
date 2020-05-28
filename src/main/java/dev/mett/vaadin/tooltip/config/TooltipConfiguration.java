@@ -43,15 +43,12 @@ public class TooltipConfiguration implements Serializable {
     }
 
     // TODO: support:
-    // 1. placement
-    // 2. animateFill
-    // 3. animation
-    // 4. appendTo
-    // 5. aria
-    // 6. ignoreAttributes (TODO: check if it should always be true)
-    // 7. inlinePositioning
-
-    // TODO: use enums
+    // 1. animateFill
+    // 2. animation
+    // 3. appendTo
+    // 4. aria
+    // 5. getReferenceClientRect
+    // 6. inlinePositioning
 
     /** Defines if the content is rendered as HTML or plain text */
     @Getter
@@ -75,13 +72,31 @@ public class TooltipConfiguration implements Serializable {
     @Getter
     private Object duration;
 
+    /**
+     * Defines the position of a tooltip relative to its element and the cursor.
+     *
+     * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/#followcursor
+     */
     @Getter
     @Setter
     private TC_FOLLOW_CURSOR followCursor;
 
+    /**
+     * Determines when the tooltip is shown / hidden.
+     *
+     * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/#followcursor
+     */
     @Getter
     @Setter
     private TC_HIDE_ON_CLICK hideOnClick;
+
+    /**
+     * When using UI (component) libraries like React, this is generally not
+     * necessary and slows down initialization perf a bit. | false by default
+     */
+    @Getter
+    @Setter
+    private Boolean ignoreAttributes;
 
     /**
      * Determines if a spring-like animation is applied to the transition animation
@@ -125,19 +140,35 @@ public class TooltipConfiguration implements Serializable {
     @Getter
     private Integer[] offset;
 
+    /**
+     * Declares the preferred placement of the tooltip.
+     *
+     * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/#delay
+     */
     @Getter
     @Setter
     private TC_PLACEMENT placement;
+
+    /** Specifies the role attribute on the tippy element */
+    @Getter
+    @Setter
+    private String role;
 
     /** If the tooltip should be shown right after its creation */
     @Getter
     @Setter
     private Boolean showOnCreate;
 
+    /**
+     * Determines if the tippy sticks to the reference element while it is mounted.
+     *
+     * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/#sticky
+     */
     @Getter
     @Setter
     private TC_STICKY sticky;
 
+    /** Determines the theme of the tippy element */
     @Getter
     @Setter
     private String theme;
@@ -145,6 +176,7 @@ public class TooltipConfiguration implements Serializable {
     /** JS events that should trigger opening the tooltip (separated by spaces) */
     private String trigger;
 
+    /** Specifies the z-index CSS on the root popper node */
     @Getter
     @Setter
     private Integer zIndex;
@@ -210,8 +242,8 @@ public class TooltipConfiguration implements Serializable {
     /**
      * see: https://popper.js.org/docs/v2/modifiers/offset/
      *
-     * @param skidding
-     * @param distance
+     * @param skidding see: https://popper.js.org/docs/v2/modifiers/offset/#skidding
+     * @param distance see: https://popper.js.org/docs/v2/modifiers/offset/#distance
      */
     public void setOffset(int skidding, int distance) {
         this.offset = new Integer[] { skidding, distance };
