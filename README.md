@@ -33,6 +33,19 @@ class MyComp extends Component implements HasTooltip {
 }
 ```
 
+### Display Configuration
+```
+TooltipConfiguration ttconfig = new TooltipConfiguration("test text");
+ttconfig.setDuration(null, 20);
+ttconfig.setContent("test \n<br> abc");
+ttconfig.setFollowCursor(TC_FOLLOW_CURSOR.HORIZONTAL);
+ttconfig.setHideOnClick(TC_HIDE_ON_CLICK.FALSE);
+ttconfig.setShowOnCreate(false);
+
+Textfield tf = new TextField();
+Tooltips.getCurrent().setTooltip(tf, tconf);
+```
+
 ## Browser Compatibilty
 This library should work nicely with any modern browser but Chrome and Firefox were used during testing.
 
