@@ -8,7 +8,7 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 
 // NOTE: Vaadin for some reason does not remember 'tippy.js' upon building a project that uses this plugin
 //       Therefore it needs to be redeclared in pom.xml
-@NpmPackage(value = "tippy.js", version = "6.1.0")
+@NpmPackage(value = "tippy.js", version = "6.2.3")
 @NpmPackage(value = "retry", version = "0.12.0")
 @JsModule("./js/tooltip/tooltips.js")
 @CssImport("tippy.js/dist/tippy.css")
