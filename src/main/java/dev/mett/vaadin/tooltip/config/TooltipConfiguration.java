@@ -173,13 +173,23 @@ public class TooltipConfiguration implements Serializable {
     @Setter
     private String theme;
 
+    /** Determines the behavior on touch devices. */
+    @Getter
+    private Object touch;
+
     /** JS events that should trigger opening the tooltip (separated by spaces) */
+    @Getter
+    @Setter
     private String trigger;
 
     /** Specifies the z-index CSS on the root popper node */
     @Getter
     @Setter
     private Integer zIndex;
+
+    public JsonObject toJson() {
+        return (JsonObject) TooltipConfigurationJsonSerializer.toJson(this);
+    }
 
     /*
      * ### SETTER ###
@@ -263,7 +273,37 @@ public class TooltipConfiguration implements Serializable {
         this.content = content;
     }
 
-    public JsonObject toJson() {
-        return (JsonObject) TooltipConfigurationJsonSerializer.toJson(this);
+    /**
+     * Determines the behavior on touch devices<br>
+     * <br>
+     * see: https://atomiks.github.io/tippyjs/v6/all-props/#touch
+     *
+     * @param supportsTouch if touch input triggers a tooltip (default = true)
+     */
+    public void setTouch(Boolean supportsTouch) {
+        this.touch = supportsTouch;
+    }
+
+    /**
+     * Determines the behavior on touch devices<br>
+     * <br>
+     * see: https://atomiks.github.io/tippyjs/v6/all-props/#touch
+     *
+     * @param touchTrigger the type of touch trigger
+     */
+    public void setTouch(String touchTrigger) {
+        this.touch = touchTrigger;
+    }
+
+    /**
+     * Determines the behavior on touch devices<br>
+     * <br>
+     * see: https://atomiks.github.io/tippyjs/v6/all-props/#touch
+     *
+     * @param touchTrigger the type of touch trigger
+     * @param duration     the it takes to trigger an action
+     */
+    public void setTouch(String touchTrigger, int duration) {
+        this.touch = new Object[] { touchTrigger, duration };
     }
 }

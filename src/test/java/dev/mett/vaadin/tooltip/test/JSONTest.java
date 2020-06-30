@@ -19,11 +19,12 @@ public class JSONTest {
         config.setFollowCursor(TC_FOLLOW_CURSOR.HORIZONTAL);
         config.setHideOnClick(TC_HIDE_ON_CLICK.FALSE);
         config.setShowOnCreate(false);
+        config.setTouch("hold", 500);
 
         JsonObject json = config.toJson();
 
         assertEquals(
-                "{\"allowHTML\":true,\"content\":\"test <br><br> abc\",\"duration\":[null,20],\"followCursor\":\"horizontal\",\"hideOnClick\":false,\"showOnCreate\":false}",
+                "{\"allowHTML\":true,\"content\":\"test <br><br> abc\",\"duration\":[null,20],\"followCursor\":\"horizontal\",\"hideOnClick\":false,\"showOnCreate\":false,\"touch\":[\"hold\",500]}",
                 json.toJson()
         );
     }
