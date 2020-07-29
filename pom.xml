@@ -6,13 +6,13 @@
 
 	<groupId>dev.mett.vaadin</groupId>
 	<artifactId>tooltip</artifactId>
-	<version>1.5.1</version>
+	<version>1.6.0</version>
 	<name>Tooltips4Vaadin</name>
 	<description>Proper tooltips for Vaadin Flow.</description>
 	<packaging>jar</packaging>
 
 	<properties>
-		<vaadin.version>14.2.2</vaadin.version>
+		<vaadin.version>14.3.1</vaadin.version>
 
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
