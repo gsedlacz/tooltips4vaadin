@@ -15,6 +15,7 @@ public class TooltipDemo extends FlexLayout {
 
     public TooltipDemo() {
         EmailField emailField = new EmailField();
+        emailField.setId("abc");
         Tooltips.getCurrent().setTooltip(emailField, "initial Value");
 
         Button btChangeTooltip = new Button("change tooltip", evt -> {
@@ -33,6 +34,10 @@ public class TooltipDemo extends FlexLayout {
             }
         });
 
-        add(emailField, new VerticalLayout(btChangeTooltip, btRemoveTooltip, btDetachAttachField));
+        Button btCloseAll = new Button("close all", evt -> {
+            Tooltips.getCurrent().removeAllTooltips();
+        });
+
+        add(emailField, new VerticalLayout(btChangeTooltip, btRemoveTooltip, btDetachAttachField, btCloseAll));
     }
 }

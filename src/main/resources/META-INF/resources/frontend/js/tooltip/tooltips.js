@@ -1,4 +1,4 @@
-import tippy, {followCursor, sticky} from 'tippy.js';
+import tippy, {followCursor, sticky, hideAll} from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 
@@ -29,7 +29,7 @@ window.tooltips = {
 			return new Promise((resolve, reject) => {
 				operation.attempt(async function () {
 					const element = window.tooltips.getElement(classname);
-					const err = element == undefined || element == null ? "Could not find element for class: " + classname : null;
+					const err = element === undefined || element == null ? "Could not find element for class: " + classname : null;
 					
 					if(operation.retry(err)){
 						return;
@@ -116,5 +116,9 @@ window.tooltips = {
 			if(lostTooltip) {
 				lostTooltip._tippy.destroy();
 			}
+		},
+
+		closeAllTooltips: function() {
+			hideAll();
 		}
 }

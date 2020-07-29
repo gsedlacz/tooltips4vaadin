@@ -51,6 +51,7 @@ public final class Tooltips implements Serializable {
         String UPDATE_TOOLTIP = "window.tooltips.updateTooltip($0,$1)";
         String CLOSE_TOOLTIP_FORCED = "window.tooltips.closeTooltipForced($0)";
         String REMOVE_TOOLTIP = "window.tooltips.removeTooltip($0,$1)";
+        String CLOSE_ALL_TOOLTIPS = "window.tooltips.closeAllTooltips()";
     }
 
     /** STATIC METHODS **/
@@ -255,6 +256,14 @@ public final class Tooltips implements Serializable {
     }
 
     /**
+     * Closes all currently opened tooltips and deregisters any
+     */
+    public void removeAllTooltips() {
+        getTooltipStorage().values().forEach(this::removeTooltipState);
+        callJs(JS_METHODS.CLOSE_ALL_TOOLTIPS, Optional.empty());
+    }
+
+    /**
      * Close a tooltip if it is still open.
      *
      * @param state                       {@link TooltipStateData}
@@ -271,10 +280,8 @@ public final class Tooltips implements Serializable {
     /**
      * Deregisters a tooltip in the frontend (tippy).
      *
-     * @param uniqueClassName             the CSS classname that currently
-     *                                    identifies the tooltip
-     * @param ui
-     * @param afterFrontendDeregistration
+     * @param state {@link TooltipStateData}
+     * @param afterFrontendDeregistration an action to perform after the element has been deregistered
      */
     private void deregisterTooltip(
             final TooltipStateData state,
