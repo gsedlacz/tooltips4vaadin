@@ -40,9 +40,8 @@ public class TooltipDemo extends FlexLayout {
             }
         });
 
-        var btCloseAll = new Button("close all", evt -> {
-            Tooltips.getCurrent().removeAllTooltips();
-        });
+        var btCloseAll = new Button("close all",
+                evt -> Tooltips.getCurrent().removeAllTooltips());
 
         add(emailField, new VerticalLayout(btChangeTooltip, btRemoveTooltip, btShowTooltip, btHideTooltip, btDetachAttachField, btCloseAll));
     }
