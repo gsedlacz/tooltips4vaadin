@@ -52,6 +52,8 @@ public final class Tooltips implements Serializable {
         String CLOSE_TOOLTIP_FORCED = "window.tooltips.closeTooltipForced($0)";
         String REMOVE_TOOLTIP = "window.tooltips.removeTooltip($0,$1)";
         String CLOSE_ALL_TOOLTIPS = "window.tooltips.closeAllTooltips()";
+        String SHOW_TOOLTIP = "window.tooltips.showTooltip($0)";
+        String HIDE_TOOLTIP = "window.tooltips.hideTooltip($0)";
     }
 
     /** STATIC METHODS **/
@@ -106,7 +108,7 @@ public final class Tooltips implements Serializable {
     }
 
     /**
-     * TODO: 1. Bulk operations 2. register UI init listener
+     * TODO: 1. Bulk operations
      */
 
     /* *** SET / MODIFY *** */
@@ -260,7 +262,7 @@ public final class Tooltips implements Serializable {
      */
     public void removeAllTooltips() {
         getTooltipStorage().values().forEach(this::removeTooltipState);
-        callJs(JS_METHODS.CLOSE_ALL_TOOLTIPS, Optional.empty());
+        callJs(JS_METHODS.CLOSE_ALL_TOOLTIPS);
     }
 
     /**
@@ -299,6 +301,26 @@ public final class Tooltips implements Serializable {
         }
     }
 
+    /* *** SHOW / HIDE *** */
+
+    /**
+     * If the component passed has a tooltip associated to it it gets opened.
+     *
+     * @param component {@link Component}
+     */
+    public void showTooltip(Component component) {
+        callJs(JS_METHODS.SHOW_TOOLTIP, component);
+    }
+
+    /**
+     * If the component passed has a tooltip associated to it it gets closed.
+     *
+     * @param component {@link Component}
+     */
+    public void hideTooltip(Component component) {
+        callJs(JS_METHODS.HIDE_TOOLTIP, component);
+    }
+
     /* *** CONFIG *** */
     /**
      * Gives access to the {@link TooltipConfiguration} of a given component.
@@ -330,6 +352,13 @@ public final class Tooltips implements Serializable {
                         /* nothing */}
                     ));
         });
+    }
+
+    private void callJs(
+            String function,
+            Serializable... parameters
+    ) {
+        callJs(function, Optional.empty(), parameters);
     }
 
     private TooltipStateData getTooltipState(final Component comp, final boolean register) {

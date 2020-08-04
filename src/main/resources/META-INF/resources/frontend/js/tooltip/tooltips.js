@@ -120,5 +120,13 @@ window.tooltips = {
 
 		closeAllTooltips: function() {
 			hideAll();
+		},
+
+		showTooltip: function(tooltipElement) {
+			if(tooltipElement && tooltipElement._tippy) tooltipElement._tippy.show();
+		},
+
+		hideTooltip: function(tooltipElement) {
+			if(tooltipElement && tooltipElement._tippy) tooltipElement._tippy.hide();
 		}
 }

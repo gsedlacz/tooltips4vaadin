@@ -7,6 +7,8 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.router.Route;
+import dev.mett.vaadin.tooltip.mixin.HasTooltip;
+import lombok.var;
 
 @Route("")
 public class TooltipDemo extends FlexLayout {
@@ -14,19 +16,23 @@ public class TooltipDemo extends FlexLayout {
     private final AtomicLong atomicLong = new AtomicLong();
 
     public TooltipDemo() {
-        EmailField emailField = new EmailField();
+        var emailField = new TooltipEmailField();
         emailField.setId("abc");
-        Tooltips.getCurrent().setTooltip(emailField, "initial Value");
+        emailField.setTooltip("initial Value");
 
-        Button btChangeTooltip = new Button("change tooltip", evt -> {
-            Tooltips.getCurrent().setTooltip(emailField, "value-" + atomicLong.getAndIncrement());
-        });
+        var btChangeTooltip = new Button("change tooltip",
+                evt -> emailField.setTooltip("value-" + atomicLong.getAndIncrement()));
 
-        Button btRemoveTooltip = new Button("remove tooltip", evt -> {
-            Tooltips.getCurrent().removeTooltip(emailField);
-        });
+        var btRemoveTooltip = new Button("remove tooltip",
+                evt -> emailField.removeTooltip());
 
-        Button btDetachAttachField = new Button("detach/attach field", evt -> {
+        var btShowTooltip = new Button("show",
+                evt -> emailField.show());
+
+        var btHideTooltip = new Button("hide",
+                evt -> emailField.hide());
+
+        var btDetachAttachField = new Button("detach/attach field", evt -> {
             if (getChildren().filter(c -> emailField == c).count() != 0) {
                 remove(emailField);
             } else {
@@ -34,10 +40,12 @@ public class TooltipDemo extends FlexLayout {
             }
         });
 
-        Button btCloseAll = new Button("close all", evt -> {
+        var btCloseAll = new Button("close all", evt -> {
             Tooltips.getCurrent().removeAllTooltips();
         });
 
-        add(emailField, new VerticalLayout(btChangeTooltip, btRemoveTooltip, btDetachAttachField, btCloseAll));
+        add(emailField, new VerticalLayout(btChangeTooltip, btRemoveTooltip, btShowTooltip, btHideTooltip, btDetachAttachField, btCloseAll));
     }
+
+    private static class TooltipEmailField extends EmailField implements HasTooltip {}
 }
