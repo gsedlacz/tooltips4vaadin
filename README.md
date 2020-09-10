@@ -3,10 +3,6 @@ This plugin allows you to define proper tooltips.
 
 ![Tooltip example image did not load.](https://gitlab.com/gsedlacz/tooltips4vaadin/raw/master/misc/demo.png "Tooltip demo")
 
-
-## Official Download
-[Vaadin Directory](https://vaadin.com/directory/component/tooltips4vaadin)
-
 ## Requirements
 1. Java 1.8
 2. Vaadin Flow version: 14+
@@ -46,8 +42,23 @@ Textfield tf = new TextField();
 Tooltips.getCurrent().setTooltip(tf, tconf);
 ```
 
+### Using a default configuration
+```
+TooltipConfiguration defaultConf = new TooltipConfiguration();
+defaultConf.setArrow(true);
+defaultConf.setDelay(2000);
+
+Tooltips.getCurrent().setDefaultTooltipConfiguration(defaultConf);
+
+// both of the approaches below will make use of the default configuration, while directly setting a customized configuration will not
+HasTooltip component = ...
+component.setTooltip("message");
+// OR
+Tooltips.getCurrent().setTooltip(component, "message");
+```
+
 ## Browser Compatibilty
-This library should work nicely with any modern browser but Chrome and Firefox were used during testing.
+This library should work nicely with any modern browser but only the ones shown on the right side were tested.
 
 ## Trouble Shooting
 If you receive build errors like:
@@ -62,7 +73,7 @@ Try loading npm dependencies manually using: `npm i` in your project directory.
 
 ## Credit
 This plugin makes use of these libraries:
-1. tippy.js (license: MIT, version. 6.1.0, URL: https://github.com/atomiks/tippyjs)
+1. tippy.js (license: MIT, version. 6.2.3, URL: https://github.com/atomiks/tippyjs)
 2. Project Lombok (license: MIT, version 1.18.12, URL: https://projectlombok.org/)
 3. retry (license: MIT, version: 0.12.0, URL: https://www.npmjs.com/package/retry)
 
