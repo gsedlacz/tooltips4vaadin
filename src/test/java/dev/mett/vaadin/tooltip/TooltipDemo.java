@@ -3,6 +3,7 @@ package dev.mett.vaadin.tooltip;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,7 +25,19 @@ public class TooltipDemo extends FlexLayout {
     private final AtomicLong atomicLong = new AtomicLong();
 
     public TooltipDemo() {
-        demoGrid();
+        demoField();
+    }
+
+    private void demoDefaultConfig() {
+        var defaultConf = new TooltipConfiguration();
+        defaultConf.setArrow(true);
+        defaultConf.setDelay(2000);
+        Tooltips.getCurrent().setDefaultTooltipConfiguration(defaultConf);
+
+        var field = new TooltipEmailField();
+        field.setTooltip("test");
+
+        add(field);
     }
 
     private void demoField() {

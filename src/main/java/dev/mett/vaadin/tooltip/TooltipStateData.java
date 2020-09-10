@@ -9,6 +9,7 @@ import com.vaadin.flow.shared.Registration;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -26,6 +27,7 @@ class TooltipStateData implements Serializable {
     private String cssClass;
     @Getter
     @Setter
+    @NonNull
     private TooltipConfiguration tooltipConfig;
     @Getter
     private final long tooltipId;

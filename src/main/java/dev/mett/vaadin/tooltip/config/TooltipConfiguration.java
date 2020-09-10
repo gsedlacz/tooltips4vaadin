@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.SerializationUtils;
 
 /**
  * Allows you to customize tooltips properties.<br>
@@ -26,10 +27,14 @@ public class TooltipConfiguration implements Serializable {
     private static final long serialVersionUID = 7099314666522619319L;
 
     /**
-     * INTERNAL
+     * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/
+     *
+     * NOTE: you will have to define the content (tootlip message) by default it is empty
+     *
+     * @see #setContent(String)
      */
     public TooltipConfiguration() {
-        /* internal constructor */
+        /* no args */
     }
 
     /**
@@ -40,6 +45,15 @@ public class TooltipConfiguration implements Serializable {
      */
     public TooltipConfiguration(String text) {
         setContent(text);
+    }
+
+    /**
+     * Creates a deep copy of this configuration
+     *
+     * @return deep copy
+     */
+    public TooltipConfiguration clone() {
+        return SerializationUtils.clone(this);
     }
 
     // TODO: support:
