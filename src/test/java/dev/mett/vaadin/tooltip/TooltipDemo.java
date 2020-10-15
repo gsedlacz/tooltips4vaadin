@@ -3,6 +3,7 @@ package dev.mett.vaadin.tooltip;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import dev.mett.vaadin.tooltip.config.TC_PLACEMENT;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,22 @@ public class TooltipDemo extends FlexLayout {
     private final AtomicLong atomicLong = new AtomicLong();
 
     public TooltipDemo() {
-        demoField();
+        extendedConfig();
+    }
+
+    private void extendedConfig() {
+        TooltipEmailField field = new TooltipEmailField();
+        field.setTooltip(new TooltipConfigurationExt("test", TC_PLACEMENT.BOTTOM_END));
+        add(field);
+    }
+
+    private class TooltipConfigurationExt extends TooltipConfiguration {
+        public TooltipConfigurationExt(String content, TC_PLACEMENT placement) {
+            super();
+
+            setContent(content);
+            setPlacement(placement);
+        }
     }
 
     private void demoDefaultConfig() {
@@ -58,7 +74,7 @@ public class TooltipDemo extends FlexLayout {
             evt -> emailField.hide());
 
         var btDetachAttachField = new Button("detach/attach field", evt -> {
-            if (getChildren().filter(c -> emailField == c).count() != 0) {
+            if (getChildren().anyMatch(c -> emailField == c)) {
                 remove(emailField);
             } else {
                 getElement().insertChild(0, emailField.getElement());

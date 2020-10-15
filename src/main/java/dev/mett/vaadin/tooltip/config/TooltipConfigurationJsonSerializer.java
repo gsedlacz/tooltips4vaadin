@@ -59,22 +59,34 @@ public class TooltipConfigurationJsonSerializer {
     }
 
     private static JsonObject processFields(Object bean) {
-        JsonObject json = new JreJsonObject(jsonFactory);
+        return processFields(bean, bean.getClass());
+    }
 
-        for (Field field : bean.getClass().getDeclaredFields()) {
-            String fieldName = field.getName();
-            if (fieldName.equals("serialVersionUID"))
-                continue;
+    private static JsonObject processFields(Object bean, Class<?> clazz) {
+        JsonObject json;
+        Class<?> superclass = clazz.getSuperclass();
 
-            field.setAccessible(true);
-            try {
-                JsonValue value = toJson(field.get(bean), false);
-                if (value != null)
-                    json.put(fieldName, value);
+        if(superclass == Object.class) {
+            json = new JreJsonObject(jsonFactory);
 
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                log.log(Level.FINER, "Faield to convert field=" + field + " of bean=" + bean);
+            for (Field field : clazz.getDeclaredFields()) {
+                String fieldName = field.getName();
+                if (fieldName.equals("serialVersionUID"))
+                    continue;
+
+                field.setAccessible(true);
+                try {
+                    JsonValue value = toJson(field.get(bean), false);
+                    if (value != null)
+                        json.put(fieldName, value);
+
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    log.log(Level.FINER, "Faield to convert field=" + field + " of bean=" + bean);
+                }
             }
+
+        } else {
+            json = processFields(bean, superclass);
         }
 
         return json;
