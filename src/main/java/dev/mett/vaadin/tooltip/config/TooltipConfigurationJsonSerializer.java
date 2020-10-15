@@ -58,11 +58,11 @@ public class TooltipConfigurationJsonSerializer {
         return processFields(bean);
     }
 
-    private static JsonObject processFields(Object bean) {
+    private static <T> JsonObject processFields(T bean) {
         return processFields(bean, bean.getClass());
     }
 
-    private static JsonObject processFields(Object bean, Class<?> clazz) {
+    private static <T> JsonObject processFields(T bean, Class<? extends T> clazz) {
         JsonObject json;
         Class<?> superclass = clazz.getSuperclass();
 
