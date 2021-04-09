@@ -82,5 +82,5 @@ This plugin makes use of these libraries:
 3. retry (license: MIT, version: 0.12.0, URL: https://www.npmjs.com/package/retry)
 
 ## Copyright and license
-Code and documentation copyright 2020 Gerrit Sedlaczek.  
+Code and documentation copyright 2021 Gerrit Sedlaczek.  
 Code and documentation released under Apache 2.0 license.
