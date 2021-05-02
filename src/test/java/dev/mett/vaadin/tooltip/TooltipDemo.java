@@ -26,10 +26,10 @@ public class TooltipDemo extends FlexLayout {
     private final AtomicLong atomicLong = new AtomicLong();
 
     public TooltipDemo() {
-        extendedConfig();
+        exampleBasic();
     }
 
-    private void extendedConfig() {
+    private void exampleExtendedConfiguration() {
         TooltipEmailField field = new TooltipEmailField();
         field.setTooltip(new TooltipConfigurationExt("test", TC_PLACEMENT.BOTTOM_END));
         add(field);
@@ -44,7 +44,7 @@ public class TooltipDemo extends FlexLayout {
         }
     }
 
-    private void demoDefaultConfig() {
+    private void exampleDefaultConfig() {
         var defaultConf = new TooltipConfiguration();
         defaultConf.setArrow(true);
         defaultConf.setDelay(2000);
@@ -56,8 +56,9 @@ public class TooltipDemo extends FlexLayout {
         add(field);
     }
 
-    private void demoField() {
+    private void exampleBasic() {
         var emailField = new TooltipEmailField();
+        emailField.setHeight("fit-content");
         emailField.setId("abc");
         emailField.setTooltip("initial Value");
 
@@ -75,7 +76,7 @@ public class TooltipDemo extends FlexLayout {
 
         var btDetachAttachField = new Button("detach/attach field", evt -> {
             if (getChildren().anyMatch(c -> emailField == c)) {
-                remove(emailField);
+                remove(emailField); //FIXME: remove is broken
             } else {
                 getElement().insertChild(0, emailField.getElement());
             }
@@ -90,7 +91,7 @@ public class TooltipDemo extends FlexLayout {
 
     private static class TooltipEmailField extends EmailField implements HasTooltip {}
 
-    private void demoGrid() {
+    private void exampleGrid() {
         Tooltips tt = Tooltips.getCurrent();
 
         List<GridData> data = new ArrayList<>();
