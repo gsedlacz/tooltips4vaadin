@@ -20,11 +20,20 @@ stages:
 #  - deploy
 
 build_project:
-  image: maven:3.6.1-jdk-11-slim
+  image: maven:3.6-jdk-11-slim
   stage: build
+  except:
+    - master
   script:
-    - mvn com.github.eirslett:frontend-maven-plugin:1.7.6:install-node-and-npm -DnodeVersion="v10.16.0"
     - mvn $MAVEN_CLI_OPTS install -Pdirectory
+
+deploy_master:
+  image: maven:3.6-jdk-11-slim
+  stage: build
+  only:
+    - master
+  script:
+    - mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml
 
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
@@ -35,20 +44,3 @@ build_project:
 #  except:
 #    - master
 
-# Verify merge requests using JDK8
-#verify:jdk8:
-#  <<: *verify
-
-# To deploy packages from CI, create a ci_settings.xml file
-# For deploying packages to GitLab's Maven Repository: See https://docs.gitlab.com/ee/user/project/packages/maven_repository.html#creating-maven-packages-with-gitlab-cicd for more details.
-# Please note: The GitLab Maven Repository is currently only available in GitLab Premium / Ultimate.
-# For `master` branch run `mvn deploy` automatically.
-#deploy:jdk8:
-#  stage: deploy
-#  script:
-#    - if [ ! -f ci_settings.xml ];
-#        then echo "CI settings missing\! If deploying to GitLab Maven Repository, please see https://docs.gitlab.com/ee/user/project/packages/maven_repository.html#creating-maven-packages-with-gitlab-cicd for instructions.";
-#      fi
-#    - 'mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml'
-#  only:
-#    - master
