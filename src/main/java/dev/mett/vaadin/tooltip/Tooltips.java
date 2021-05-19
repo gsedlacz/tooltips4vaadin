@@ -411,12 +411,16 @@ public final class Tooltips implements Serializable {
   private static void ensureCssClassIsSet(final TooltipStateData state) {
     HasStyle comp = (HasStyle) state.getComponent().get();
 
-    if (
-        comp != null && state.getCssClass() != null && comp.getClassName() != null
-            && !comp.getClassName().contains(state.getCssClass())
-    ) {
+    if (canCSSClassBeAddedToComponent(state, comp)) {
       comp.addClassName(state.getCssClass());
     }
+  }
+
+  private static boolean canCSSClassBeAddedToComponent(TooltipStateData state, HasStyle comp) {
+    return ! (comp == null
+        || state.getCssClass() == null
+        || comp.getClassName() == null
+        || comp.getClassName().contains(state.getCssClass()));
   }
 
   Map<Long, TooltipStateData> getTooltipStorage() {
