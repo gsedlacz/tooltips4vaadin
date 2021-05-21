@@ -5,6 +5,7 @@ import dev.mett.vaadin.tooltip.Tooltips;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 
 public class DefaultConfigurationExample {
+
   public Component exampleDefaultConfig() {
     var defaultConf = new TooltipConfiguration();
     defaultConf.setArrow(true);

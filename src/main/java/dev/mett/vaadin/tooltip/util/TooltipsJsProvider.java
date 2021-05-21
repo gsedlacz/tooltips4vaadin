@@ -19,5 +19,6 @@ import com.vaadin.flow.component.dependency.NpmPackage;
  * @author Gerrit Sedlaczek
  */
 public class TooltipsJsProvider extends Component {
-    private static final long serialVersionUID = 3079421969338830944L;
+
+  private static final long serialVersionUID = 3079421969338830944L;
 }

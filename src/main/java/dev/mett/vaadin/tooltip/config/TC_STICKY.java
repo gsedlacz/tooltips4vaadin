@@ -12,11 +12,11 @@ import lombok.RequiredArgsConstructor;
  * @author Gerrit Sedlaczek
  */
 public enum TC_STICKY implements JsonConvertible {
-    FALSE(false),
-    TRUE(true),
-    REFERENCE("reference"),
-    POPPER("POPPER");
+  FALSE(false),
+  TRUE(true),
+  REFERENCE("reference"),
+  POPPER("POPPER");
 
-    @Getter
-    private final Object value;
+  @Getter
+  private final Object value;
 }

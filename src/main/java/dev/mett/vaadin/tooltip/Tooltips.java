@@ -207,13 +207,13 @@ public final class Tooltips implements Serializable {
 
   private UI getUI(Optional<Component> component) {
 
-    if(component.isPresent()) {
+    if (component.isPresent()) {
       var possibleComponentUI = component.get().getUI();
 
-      if(possibleComponentUI.isPresent()) {
+      if (possibleComponentUI.isPresent()) {
         var componentUI = possibleComponentUI.get();
 
-        if(componentUI != defaultUI) {
+        if (componentUI != defaultUI) {
 //          log.info("Preserve on refresh detected");
           return componentUI;
         }

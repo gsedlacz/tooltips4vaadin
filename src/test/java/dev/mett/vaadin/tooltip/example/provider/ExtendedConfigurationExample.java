@@ -5,6 +5,7 @@ import dev.mett.vaadin.tooltip.config.TC_PLACEMENT;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 
 public class ExtendedConfigurationExample {
+
   public Component exampleExtendedConfiguration() {
     TooltipEmailField field = new TooltipEmailField();
     field.setTooltip(new TooltipConfigurationExt("test", TC_PLACEMENT.BOTTOM_END));

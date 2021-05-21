@@ -12,16 +12,19 @@ import lombok.RequiredArgsConstructor;
  * @author Gerrit Sedlaczek
  */
 public enum TC_HIDE_ON_CLICK implements JsonConvertible {
-    /** DEFAULT | hides when clicking somewhere */
-    TRUE(true),
-    /** hides never due to clicks */
-    FALSE(false),
-    /**
-     * hides only by clicking the element on which tooltip got registered (not
-     * anywhere else)
-     */
-    HORIZONTAL("toggle");
+  /**
+   * DEFAULT | hides when clicking somewhere
+   */
+  TRUE(true),
+  /**
+   * hides never due to clicks
+   */
+  FALSE(false),
+  /**
+   * hides only by clicking the element on which tooltip got registered (not anywhere else)
+   */
+  HORIZONTAL("toggle");
 
-    @Getter
-    private final Object value;
+  @Getter
+  private final Object value;
 }

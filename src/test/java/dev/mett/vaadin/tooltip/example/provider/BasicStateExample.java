@@ -8,7 +8,9 @@ import dev.mett.vaadin.tooltip.Tooltips;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class BasicStateExample {
+
   private final AtomicLong atomicLong = new AtomicLong();
+
   public <P extends Component & HasComponents> void exampleBasic(P parent) {
     var emailField = new TooltipEmailField();
     emailField.setHeight("fit-content");
