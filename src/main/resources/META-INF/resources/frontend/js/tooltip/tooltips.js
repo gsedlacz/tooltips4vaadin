@@ -1,4 +1,4 @@
-import tippy, {followCursor, sticky, hideAll} from 'tippy.js';
+import tippy, {followCursor, hideAll, sticky} from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 

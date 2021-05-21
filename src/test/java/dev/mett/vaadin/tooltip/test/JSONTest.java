@@ -2,12 +2,11 @@ package dev.mett.vaadin.tooltip.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
-
 import dev.mett.vaadin.tooltip.config.TC_FOLLOW_CURSOR;
 import dev.mett.vaadin.tooltip.config.TC_HIDE_ON_CLICK;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import elemental.json.JsonObject;
+import org.junit.jupiter.api.Test;
 
 public class JSONTest {
 

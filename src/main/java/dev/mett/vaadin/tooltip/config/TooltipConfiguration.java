@@ -1,10 +1,9 @@
 package dev.mett.vaadin.tooltip.config;
 
-import java.io.Serializable;
-
 import dev.mett.vaadin.tooltip.Tooltips;
 import dev.mett.vaadin.tooltip.exception.InvalidTooltipContentException;
 import elemental.json.JsonObject;
+import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
