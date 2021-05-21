@@ -12,6 +12,9 @@ This plugin allows you to define proper tooltips.
 2. Vaadin Flow version: 14+
 3. npm based build
 
+## Known Limitations
+1. Does not work with @PreserveOnRefresh
+
 ## Usage
 
 ### Set / update a tooltip
