@@ -6,12 +6,14 @@
 
 	<groupId>dev.mett.vaadin</groupId>
 	<artifactId>tooltip</artifactId>
-	<version>1.7.2</version>
+	<version>${revision}</version>
 	<name>Tooltips4Vaadin</name>
 	<description>Proper tooltips for Vaadin Flow.</description>
 	<packaging>jar</packaging>
 
 	<properties>
+    <revision>2.0.0</revision>
+
 		<vaadin.version>14.5.3</vaadin.version>
 
 		<maven.compiler.source>11</maven.compiler.source>
@@ -20,7 +22,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<jetty.version>9.4.15.v20190215</jetty.version>
-	</properties>
+  </properties>
 
 	<organization>
 		<name>Gerrit Sedlaczek</name>
@@ -74,7 +76,7 @@
 			<url>${env.CI_SERVER_URL}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
 		</repository>
   	</repositories>
-  
+
   	<distributionManagement>
   		<repository>
     		<id>gitlab-maven</id>
@@ -113,9 +115,9 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-core</artifactId>
 			<exclusions>
-				<!-- Webjars are only needed when running in Vaadin 13 compatibility 
-					mode in V14. Your add-on can support npm in the same version mode and V13 
-					compatiblity mode at the same time, or with separate versions. Any V13 version 
+				<!-- Webjars are only needed when running in Vaadin 13 compatibility
+					mode in V14. Your add-on can support npm in the same version mode and V13
+					compatiblity mode at the same time, or with separate versions. Any V13 version
 					should work with the compatibility mode in V14. -->
 				<exclusion>
 					<groupId>com.vaadin.webjar</groupId>
@@ -158,7 +160,7 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>
 		    <groupId>org.junit.jupiter</groupId>
