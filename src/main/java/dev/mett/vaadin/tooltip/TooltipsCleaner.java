@@ -58,12 +58,15 @@ enum TooltipsCleaner {
 
                 Map<Long, TooltipStateData> tooltipStorage = Tooltips.get(ui).getTooltipStorage();
 
-//                log.log(Level.INFO, () -> "TooltipsCleaner: size pre-clean: " + tooltipStorage.size() + " | UI: " + ui);
+//                int preCleanSize = tooltipStorage.size();
 
                 tooltipStorage.entrySet()
-                        .removeIf(entry -> entry.getValue().getComponent().get() == null);
+                        .removeIf(entry ->
+                            entry.getValue()
+                                .getComponent()
+                                .get() == null);
 
-//                log.log(Level.INFO, () -> "TooltipsCleaner: size post-clean: " + tooltipStorage.size() + " | UI: " + ui);
+//                log.log(Level.INFO, () -> "cleanup finished (pre / post): (" + preCleanSize + " / " + tooltipStorage.size() + ") | UI: " + ui);
             }
         }
     }
