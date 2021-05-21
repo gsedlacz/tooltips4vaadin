@@ -214,7 +214,7 @@ public final class Tooltips implements Serializable {
         var componentUI = possibleComponentUI.get();
 
         if(componentUI != defaultUI) {
-          log.info("Preserve on refresh detected");
+//          log.info("Preserve on refresh detected");
           return componentUI;
         }
       }
@@ -346,7 +346,7 @@ public final class Tooltips implements Serializable {
       callJs(JS_METHODS.REMOVE_TOOLTIP, afterFrontendDeregistration, uniqueClassName, tippyId);
 
     } else {
-      log.fine(() -> "Tippy frontend id is null for " + state);
+      log.warning(() -> "Tippy frontend id is null for " + state);
       afterFrontendDeregistration.ifPresent(task -> task.accept(null));
     }
   }

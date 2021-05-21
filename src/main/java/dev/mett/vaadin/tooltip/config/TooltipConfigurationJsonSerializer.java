@@ -1,14 +1,6 @@
 package dev.mett.vaadin.tooltip.config;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.vaadin.flow.component.JsonSerializable;
-
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonFactory;
@@ -17,6 +9,11 @@ import elemental.json.JsonValue;
 import elemental.json.impl.JreJsonFactory;
 import elemental.json.impl.JreJsonNull;
 import elemental.json.impl.JreJsonObject;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 public class TooltipConfigurationJsonSerializer {
     private final static Logger log = Logger.getLogger(TooltipConfigurationJsonSerializer.class.getName());
@@ -81,7 +78,7 @@ public class TooltipConfigurationJsonSerializer {
                         json.put(fieldName, value);
 
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    log.log(Level.FINER, "Faield to convert field=" + field + " of bean=" + bean);
+                    log.warning("Faield to convert field=" + field + " of bean=" + bean);
                 }
             }
 
