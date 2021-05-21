@@ -6,7 +6,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import dev.mett.vaadin.tooltip.Tooltips;
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.var;
 
 public class BasicStateExample {
   private final AtomicLong atomicLong = new AtomicLong();
@@ -30,14 +29,14 @@ public class BasicStateExample {
 
     var btDetachAttachField = new Button("detach/attach field", evt -> {
       if (parent.getChildren().anyMatch(c -> emailField == c)) {
-        parent.remove(emailField); //FIXME: remove is broken
+        parent.remove(emailField);
       } else {
         parent.getElement().insertChild(0, emailField.getElement());
       }
     });
 
     var btCloseAll = new Button("close all",
-        evt -> Tooltips.getCurrent().removeAllTooltips());
+        evt -> Tooltips.getCurrent().closeAllTooltips());
 
     parent.add(new VerticalLayout(
         emailField,
