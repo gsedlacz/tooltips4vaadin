@@ -16,8 +16,8 @@ public class GridExample {
 
     List<GridData> data = new ArrayList<>();
     for (int i = 0; i < 999; i++) {
-      int ranom = new Random().nextInt(i + 1);
-      data.add(new GridData("key " + i, String.valueOf(ranom)));
+      int random = new Random().nextInt(i + 1);
+      data.add(new GridData("key " + i, String.valueOf(random)));
     }
 
     ListDataProvider<GridData> dataProvider = new ListDataProvider<>(data);
@@ -30,7 +30,7 @@ public class GridExample {
       return key;
     }).setHeader("Key");
     grid.addColumn(GridData::getRandom).setHeader("Value");
-    grid.setItems(dataProvider);
+    grid.setDataProvider(dataProvider);
 
     return grid;
   }
