@@ -1,12 +1,10 @@
 package dev.mett.vaadin.tooltip;
 
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.shared.Registration;
-
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -47,20 +45,21 @@ class TooltipStateData implements Serializable {
     }
 
     void setAttachReg(WeakReference<Registration> attachReg) {
-        setRegistration(this.attachReg, attachReg);
+        clearRegistration(this.attachReg);
+        this.attachReg = attachReg;
     }
 
     void setDetachReg(WeakReference<Registration> detachReg) {
-        setRegistration(this.detachReg, detachReg);
+        clearRegistration(this.detachReg);
+        this.detachReg = detachReg;
     }
 
-    private void setRegistration(WeakReference<Registration> thisReg, WeakReference<Registration> newReg) {
-        if (thisReg != null) {
-            Registration oldReg = thisReg.get();
+    private void clearRegistration(WeakReference<Registration> previousRegistration) {
+        if (previousRegistration != null) {
+            Registration oldReg = previousRegistration.get();
             if (oldReg != null) {
                 oldReg.remove();
             }
         }
-        thisReg = attachReg;
     }
 }

@@ -1,13 +1,5 @@
 package dev.mett.vaadin.tooltip;
 
-import java.io.Serializable;
-import java.lang.ref.WeakReference;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.HasStyle;
@@ -15,13 +7,19 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.shared.Registration;
-
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitializedException;
 import dev.mett.vaadin.tooltip.util.TooltipsJsProvider;
 import dev.mett.vaadin.tooltip.util.TooltipsUtil;
 import elemental.json.JsonNull;
 import elemental.json.JsonValue;
+import java.io.Serializable;
+import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 /**
  * Allows to easily define tooltips on Vaadin {@link Component}s.<br>
@@ -135,9 +133,11 @@ public final class Tooltips implements Serializable {
       final T component,
       final String tooltip
   ) {
-    TooltipStateData state = getTooltipState(component, true);
-    state.getTooltipConfig().setContent(tooltip);
-    setTooltip(component, state);
+    getTooltipState(component, true)
+        .ifPresent(state -> {
+          state.getTooltipConfig().setContent(tooltip);
+          setTooltip(component, state);
+        });
   }
 
   /**
@@ -149,22 +149,24 @@ public final class Tooltips implements Serializable {
       final T component,
       final TooltipConfiguration tooltipConfiguration
   ) {
-    TooltipStateData state = getTooltipState(component, true);
-    state.setTooltipConfig(tooltipConfiguration);
-    setTooltip(component, state);
+    getTooltipState(component, true)
+        .ifPresent(state -> {
+          state.setTooltipConfig(tooltipConfiguration);
+          setTooltip(component, state);
+        });
   }
 
   /**
    * Sets a tooltip to the supplied {@link Component}.<br> Automatically deregisters itself upon the components detach.<br>
    *
-   * @param <T>       requires the supplied {@link Component} to implement {@link HasStyle}
-   * @param component the {@link Component} that is supposed to have a tooltip
-   * @param state     {@link TooltipStateData}
+   * @param <T>          requires the supplied {@link Component} to implement {@link HasStyle}
+   * @param component    the {@link Component} that is supposed to have a tooltip
+   * @param tooltipState {@link TooltipStateData}
    * @see #setTooltip(Component, TooltipConfiguration)
    */
   private <T extends Component & HasStyle> void setTooltip(
       final T component,
-      final TooltipStateData state
+      final TooltipStateData tooltipState
   ) {
     if (component == null) {
       throw new IllegalArgumentException(
@@ -172,61 +174,72 @@ public final class Tooltips implements Serializable {
       );
     }
 
-    final boolean attached = component.getElement().getNode().isAttached();
-    final Page page = ui.getPage();
-
-    if (state.getCssClass() != null) {
-      // update
-      ensureCssClassIsSet(state);
-
-      if (attached) {
-        TooltipsUtil.securelyAccessUI(
-            ui,
-            () -> page.executeJs(
-                JS_METHODS.UPDATE_TOOLTIP,
-                state.getCssClass(),
-                state.getTooltipConfig().toJson()
-            )
-                .then(json -> setTippyId(state, json))
-        );
-      }
-      // else: automatically uses the new value upon attach
+    if (tooltipState.getCssClass() != null) {
+      updateKnownComponent(component, tooltipState);
 
     } else {
-      // initial setup
-      // 1. set unique css class
-      String uniqueClassName = CLASS_PREFIX + state.getTooltipId();
-      component.addClassName(uniqueClassName);
-      state.setCssClass(uniqueClassName);
-
-      // 2. register with tippy.js
-      Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
-        ensureCssClassIsSet(state);
-
-        page.executeJs(
-            JS_METHODS.SET_TOOLTIP,
-            state.getCssClass(),
-            state.getTooltipConfig().toJson()
-        )
-            .then(
-                json -> setTippyId(state, json),
-                err -> log.fine(() -> "Tooltips: js error: " + err)
-            );
-      });
-
-      if (attached) {
-        register.run();
-      }
-
-      Registration attachReg = component.addAttachListener(evt -> register.run());
-      state.setAttachReg(new WeakReference<>(attachReg));
-
-      // 3. automatic deregistration
-      Registration detachReg = component.addDetachListener(
-          evt -> TooltipsUtil.securelyAccessUI(ui, () -> closeFrontendTooltip(state, Optional.empty()))
-      );
-      state.setDetachReg(new WeakReference<>(detachReg));
+      initiallySetupComponent(component, tooltipState);
     }
+  }
+
+  private <T extends Component & HasStyle> void updateKnownComponent(T component, TooltipStateData tooltipState) {
+    final Page page = ui.getPage();
+
+    ensureCssClassIsSet(tooltipState);
+
+    if (isComponentAttached(component)) {
+      TooltipsUtil.securelyAccessUI(
+          ui,
+          () -> page.executeJs(
+              JS_METHODS.UPDATE_TOOLTIP,
+              tooltipState.getCssClass(),
+              tooltipState.getTooltipConfig().toJson()
+          )
+              .then(json -> setTippyId(tooltipState, json))
+      );
+    }
+    // else: automatically uses the new value upon attach
+  }
+
+  private <T extends Component & HasStyle> boolean isComponentAttached(T component) {
+    return component.getElement().getNode().isAttached();
+  }
+
+  private <T extends Component & HasStyle> void initiallySetupComponent(T component, TooltipStateData state) {
+    final Page page = ui.getPage();
+
+    // 1. set unique css class
+    String uniqueClassName = CLASS_PREFIX + state.getTooltipId();
+    component.addClassName(uniqueClassName);
+    state.setCssClass(uniqueClassName);
+
+    // 2. register with tippy.js
+    Runnable register = () -> TooltipsUtil.securelyAccessUI(ui, () -> {
+      ensureCssClassIsSet(state);
+
+      page.executeJs(
+          JS_METHODS.SET_TOOLTIP,
+          state.getCssClass(),
+          state.getTooltipConfig().toJson()
+      )
+          .then(
+              json -> setTippyId(state, json),
+              err -> log.warning(() -> "Tooltips: js error: " + err)
+          );
+    });
+
+    if (isComponentAttached(component)) {
+      register.run();
+    }
+
+    Registration attachReg = component.addAttachListener(evt -> register.run());
+    state.setAttachReg(new WeakReference<>(attachReg));
+
+    // 3. automatic deregistration
+    Registration detachReg = component.addDetachListener(
+        evt -> TooltipsUtil.securelyAccessUI(ui, () -> closeFrontendTooltip(state, Optional.empty()))
+    );
+    state.setDetachReg(new WeakReference<>(detachReg));
   }
 
   private void setTippyId(TooltipStateData state, JsonValue json) {
@@ -246,15 +259,19 @@ public final class Tooltips implements Serializable {
    */
   public <T extends Component & HasStyle> void removeTooltip(final T component) {
     if (component != null) {
-      TooltipStateData state = getTooltipState(component, false);
-      if (state != null && state.getCssClass() != null) {
+      getTooltipState(component, false)
+          .ifPresent(state -> {
+            if(state.getCssClass() != null) {
 
-        deregisterTooltip(state, Optional.of(json -> {
-          removeTooltipState(state);
-          component.removeClassName(state.getCssClass());
-          ComponentUtil.setData(component, COMPONENT_TOOLTIP_ID, null);
-        }));
-      }
+              deregisterTooltip(
+                  state,
+                  Optional.of(json -> {
+                    removeTooltipState(state);
+                    component.removeClassName(state.getCssClass());
+                    ComponentUtil.setData(component, COMPONENT_TOOLTIP_ID, null);
+                  }));
+            }
+          });
     }
   }
 
@@ -274,8 +291,7 @@ public final class Tooltips implements Serializable {
    */
   private void closeFrontendTooltip(
       final TooltipStateData state,
-      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
-  ) {
+      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration) {
     callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, afterFrontendDeregistration, state.getTippyId());
   }
 
@@ -287,8 +303,7 @@ public final class Tooltips implements Serializable {
    */
   private void deregisterTooltip(
       final TooltipStateData state,
-      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration
-  ) {
+      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration) {
     Integer tippyId = state.getTippyId();
     if (tippyId != null) {
       String uniqueClassName = state.getCssClass();
@@ -331,12 +346,8 @@ public final class Tooltips implements Serializable {
    * @return {@link Optional} of {@link TooltipConfiguration}
    */
   public <T extends Component & HasStyle> Optional<TooltipConfiguration> getConfiguration(T component) {
-    TooltipStateData state = getTooltipState(component, false);
-    if (state == null) {
-      return Optional.empty();
-    } else {
-      return Optional.of(state.getTooltipConfig());
-    }
+    return getTooltipState(component, false)
+        .map(TooltipStateData::getTooltipConfig);
   }
 
   /* *** UTIL *** */
@@ -363,24 +374,29 @@ public final class Tooltips implements Serializable {
     callJs(function, Optional.empty(), parameters);
   }
 
-  private TooltipStateData getTooltipState(final Component comp, final boolean register) {
+  private Optional<TooltipStateData> getTooltipState(final Component comp, final boolean register) {
     Long tooltipId = (Long) ComponentUtil.getData(comp, COMPONENT_TOOLTIP_ID);
     if (tooltipId == null) {
       if (!register) {
-        return null;
+        return Optional.empty();
       }
+
       tooltipId = tooltipIdGenerator.incrementAndGet();
       ComponentUtil.setData(comp, COMPONENT_TOOLTIP_ID, tooltipId);
     }
+
     final long finalTooltipId = tooltipId;
 
-    return tooltipStorage.computeIfAbsent(
-        tooltipId,
-        k -> new TooltipStateData(
-            defaultTooltipConfiguration != null ? defaultTooltipConfiguration.clone() : new TooltipConfiguration(),
-            finalTooltipId,
-            new WeakReference<>(comp))
-    );
+    return Optional.of(
+        tooltipStorage.computeIfAbsent(
+            tooltipId,
+            k -> new TooltipStateData(
+                defaultTooltipConfiguration != null
+                    ? defaultTooltipConfiguration.clone()
+                    : new TooltipConfiguration(),
+                finalTooltipId,
+                new WeakReference<>(comp))
+        ));
   }
 
   private boolean removeTooltipState(final TooltipStateData state) {
@@ -411,12 +427,16 @@ public final class Tooltips implements Serializable {
   private static void ensureCssClassIsSet(final TooltipStateData state) {
     HasStyle comp = (HasStyle) state.getComponent().get();
 
-    if (
-        comp != null && state.getCssClass() != null && comp.getClassName() != null
-            && !comp.getClassName().contains(state.getCssClass())
-    ) {
+    if (canCSSClassBeAddedToComponent(state, comp)) {
       comp.addClassName(state.getCssClass());
     }
+  }
+
+  private static boolean canCSSClassBeAddedToComponent(TooltipStateData state, HasStyle comp) {
+    return !(comp == null
+        || state.getCssClass() == null
+        || comp.getClassName() == null
+        || comp.getClassName().contains(state.getCssClass()));
   }
 
   Map<Long, TooltipStateData> getTooltipStorage() {

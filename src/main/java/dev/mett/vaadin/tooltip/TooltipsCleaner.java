@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,24 +25,17 @@ enum TooltipsCleaner {
     private final Logger log = Logger.getLogger(TooltipsCleaner.class.getName());
     private final List<WeakReference<UI>> uis = Collections.synchronizedList(new LinkedList<>());
 
+    private final ScheduledThreadPoolExecutor scheduledPool = initScheduledPool();
+
+    private ScheduledThreadPoolExecutor initScheduledPool() {
+        ScheduledThreadPoolExecutor pool = new ScheduledThreadPoolExecutor(1);
+        pool.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        pool.setContinueExistingPeriodicTasksAfterShutdownPolicy(true);
+        return pool;
+    }
+
     TooltipsCleaner() {
-        Thread t = new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(60000);
-                    // cleanup repeats every 60s
-                    cleanup();
-
-                } catch (InterruptedException e) {
-                    log.log(Level.WARNING, "sleep faild in TooltipCleaner", e);
-                    Thread.currentThread().interrupt();
-                }
-            }
-
-        }, TooltipsCleaner.class.getName());
-
-        t.setDaemon(true);
-        t.start();
+        scheduledPool.scheduleWithFixedDelay(this::cleanup, 60, 60, TimeUnit.SECONDS);
 
         log.log(Level.FINE, "TooltipsCleaner initialized");
     }
@@ -49,25 +44,29 @@ enum TooltipsCleaner {
         synchronized (uis) {
             Iterator<WeakReference<UI>> iterator = uis.iterator();
 
+//            log.log(Level.INFO, () -> "Processing all known UIs: " + uis.size());
+
             while (iterator.hasNext()) {
                 WeakReference<UI> uiRef = iterator.next();
                 UI ui = uiRef.get();
 
                 if (ui == null || ui.isClosing()) {
+//                    log.log(Level.INFO, () -> "##### TooltipsCleaner Removing UI: " + ui);
                     iterator.remove();
                     continue;
                 }
 
                 Map<Long, TooltipStateData> tooltipStorage = Tooltips.get(ui).getTooltipStorage();
 
-                // debug output
-//                log.log(Level.FINEST, () -> "TooltipsCleaner: size pre-clean: " + tooltipStorage.size() + " | UI: " + ui);
+//                int preCleanSize = tooltipStorage.size();
 
                 tooltipStorage.entrySet()
-                        .removeIf(entry -> entry.getValue().getComponent().get() == null);
+                        .removeIf(entry ->
+                            entry.getValue()
+                                .getComponent()
+                                .get() == null);
 
-                // debug output
-//                log.log(Level.FINEST, () -> "TooltipsCleaner: size post-clean: " + tooltipStorage.size() + " | UI: " + ui);
+//                log.log(Level.INFO, () -> "cleanup finished (pre / post): (" + preCleanSize + " / " + tooltipStorage.size() + ") | UI: " + ui);
             }
         }
     }
