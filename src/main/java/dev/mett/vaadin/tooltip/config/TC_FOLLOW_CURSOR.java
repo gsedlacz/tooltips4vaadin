@@ -12,12 +12,12 @@ import lombok.RequiredArgsConstructor;
  * @author Gerrit Sedlaczek
  */
 public enum TC_FOLLOW_CURSOR implements JsonConvertible {
-    TRUE(true),
-    FALSE(false),
-    HORIZONTAL("horizontal"),
-    VERTICAL("vertical"),
-    INITIAL("initial");
+  TRUE(true),
+  FALSE(false),
+  HORIZONTAL("horizontal"),
+  VERTICAL("vertical"),
+  INITIAL("initial");
 
-    @Getter
-    private final Object value;
+  @Getter
+  private final Object value;
 }

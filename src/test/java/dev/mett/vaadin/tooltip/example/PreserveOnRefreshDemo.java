@@ -9,11 +9,11 @@ import dev.mett.vaadin.tooltip.example.provider.BasicStateExample;
 @Route("preserve")
 public class PreserveOnRefreshDemo extends FlexLayout {
 
-    private static final long serialVersionUID = 123415812634786127L;
+  private static final long serialVersionUID = 123415812634786127L;
 
-    public PreserveOnRefreshDemo() {
-        add("PRESERVE ON REFRESH");
-        new BasicStateExample().exampleBasic(this);
+  public PreserveOnRefreshDemo() {
+    add("PRESERVE ON REFRESH");
+    new BasicStateExample().exampleBasic(this);
 
-    }
+  }
 }

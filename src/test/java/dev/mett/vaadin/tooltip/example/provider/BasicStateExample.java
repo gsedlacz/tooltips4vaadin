@@ -2,14 +2,16 @@ package dev.mett.vaadin.tooltip.example.provider;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import dev.mett.vaadin.tooltip.Tooltips;
 import java.util.concurrent.atomic.AtomicLong;
-import lombok.var;
 
 public class BasicStateExample {
+
   private final AtomicLong atomicLong = new AtomicLong();
+
   public <P extends Component & HasComponents> void exampleBasic(P parent) {
     var emailField = new TooltipEmailField();
     emailField.setHeight("fit-content");
@@ -30,17 +32,27 @@ public class BasicStateExample {
 
     var btDetachAttachField = new Button("detach/attach field", evt -> {
       if (parent.getChildren().anyMatch(c -> emailField == c)) {
-        parent.remove(emailField); //FIXME: remove is broken
+        parent.remove(emailField);
       } else {
         parent.getElement().insertChild(0, emailField.getElement());
       }
     });
 
     var btCloseAll = new Button("close all",
-        evt -> Tooltips.getCurrent().removeAllTooltips());
+        evt -> Tooltips.getCurrent().closeAllTooltips());
+
+    var btCloseUI = new Button("close UI", evt ->
+        evt.getSource().getUI().ifPresent(UI::close));
 
     parent.add(new VerticalLayout(
         emailField,
-        new VerticalLayout(btChangeTooltip, btRemoveTooltip, btShowTooltip, btHideTooltip, btDetachAttachField, btCloseAll)));
+        new VerticalLayout(
+            btChangeTooltip,
+            btRemoveTooltip,
+            btShowTooltip,
+            btHideTooltip,
+            btDetachAttachField,
+            btCloseAll,
+            btCloseUI)));
   }
 }

@@ -1,13 +1,13 @@
 package dev.mett.vaadin.tooltip.config;
 
+import elemental.json.JsonValue;
 import java.io.Serializable;
 
-import elemental.json.JsonValue;
-
 interface JsonConvertible extends Serializable {
-    Object getValue();
 
-    default JsonValue toJson() {
-        return TooltipConfigurationJsonSerializer.toJson(getValue());
-    }
+  Object getValue();
+
+  default JsonValue toJson() {
+    return TooltipConfigurationJsonSerializer.toJson(getValue());
+  }
 }
