@@ -33,7 +33,7 @@ deploy_master:
   only:
     - tags
   script:
-    - mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml -Pdirectory
+    - mvn $MAVEN_CLI_OPTS -drevision=${CI_COMMIT_TAG} deploy -s ci_settings.xml -Pdirectory
 
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
