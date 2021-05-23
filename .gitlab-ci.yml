@@ -17,7 +17,7 @@ cache:
 stages:
   - build
   - test
-#  - deploy
+  - deploy
 
 build_project:
   image: maven:3.6-jdk-11-slim
@@ -29,9 +29,9 @@ build_project:
 
 deploy_master:
   image: maven:3.6-jdk-11-slim
-  stage: build
+  stage: deploy
   only:
-    - master
+    - tags
   script:
     - mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml -Pdirectory
 
