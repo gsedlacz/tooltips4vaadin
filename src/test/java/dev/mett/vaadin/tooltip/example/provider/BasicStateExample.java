@@ -2,6 +2,7 @@ package dev.mett.vaadin.tooltip.example.provider;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import dev.mett.vaadin.tooltip.Tooltips;
@@ -40,8 +41,18 @@ public class BasicStateExample {
     var btCloseAll = new Button("close all",
         evt -> Tooltips.getCurrent().closeAllTooltips());
 
+    var btCloseUI = new Button("close UI", evt ->
+        evt.getSource().getUI().ifPresent(UI::close));
+
     parent.add(new VerticalLayout(
         emailField,
-        new VerticalLayout(btChangeTooltip, btRemoveTooltip, btShowTooltip, btHideTooltip, btDetachAttachField, btCloseAll)));
+        new VerticalLayout(
+            btChangeTooltip,
+            btRemoveTooltip,
+            btShowTooltip,
+            btHideTooltip,
+            btDetachAttachField,
+            btCloseAll,
+            btCloseUI)));
   }
 }
