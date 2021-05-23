@@ -14,10 +14,8 @@ const baseDir = path.resolve(__dirname);
 // the folder of app resources (main.js and flow templates)
 const frontendFolder = require('path').resolve(__dirname, 'frontend');
 
-const fileNameOfTheFlowGeneratedMainEntryPoint = require('path').resolve(
-    __dirname, 'target/frontend/generated-flow-imports.js');
-const mavenOutputFolderForFlowBundledFiles = require('path').resolve(__dirname,
-    'target/classes/META-INF/VAADIN');
+const fileNameOfTheFlowGeneratedMainEntryPoint = require('path').resolve(__dirname, 'target/frontend/generated-flow-imports.js');
+const mavenOutputFolderForFlowBundledFiles = require('path').resolve(__dirname, 'target/classes/META-INF/VAADIN');
 
 const devmodeGizmoJS = '@vaadin/flow-frontend/VaadinDevmodeGizmo.js'
 
@@ -41,12 +39,10 @@ mkdirp(confFolder);
 
 let stats;
 
-const transpile = !devMode || process.argv.find(
-    v => v.indexOf('--transpile-es5') >= 0);
+const transpile = !devMode || process.argv.find(v => v.indexOf('--transpile-es5') >= 0);
 
 const watchDogPrefix = '--watchDogPort=';
-let watchDogPort = devMode && process.argv.find(
-    v => v.indexOf(watchDogPrefix) >= 0);
+let watchDogPort = devMode && process.argv.find(v => v.indexOf(watchDogPrefix) >= 0);
 let client;
 if (watchDogPort) {
   watchDogPort = watchDogPort.substr(watchDogPrefix.length);
@@ -80,7 +76,7 @@ module.exports = {
   context: frontendFolder,
   entry: {
     bundle: fileNameOfTheFlowGeneratedMainEntryPoint,
-    ...(devMode && {gizmo: devmodeGizmoJS})
+    ...(devMode && { gizmo: devmodeGizmoJS })
   },
 
   output: {
@@ -99,17 +95,17 @@ module.exports = {
   devServer: {
     // webpack-dev-server serves ./ ,  webpack-generated,  and java webapp
     contentBase: [mavenOutputFolderForFlowBundledFiles, 'src/main/webapp'],
-    after: function (app, server) {
-      app.get(`/stats.json`, function (req, res) {
+    after: function(app, server) {
+      app.get(`/stats.json`, function(req, res) {
         res.json(stats);
       });
-      app.get(`/stats.hash`, function (req, res) {
+      app.get(`/stats.hash`, function(req, res) {
         res.json(stats.hash.toString());
       });
-      app.get(`/assetsByChunkName`, function (req, res) {
+      app.get(`/assetsByChunkName`, function(req, res) {
         res.json(stats.assetsByChunkName);
       });
-      app.get(`/stop`, function (req, res) {
+      app.get(`/stop`, function(req, res) {
         // eslint-disable-next-line no-console
         console.log("Stopped 'webpack-dev-server'");
         process.exit(0);
@@ -179,10 +175,8 @@ module.exports = {
       compiler.hooks.afterEmit.tapAsync("FlowIdPlugin", (compilation, done) => {
         let statsJson = compilation.getStats().toJson();
         // Get bundles as accepted keys (except any es5 bundle)
-        let acceptedKeys = statsJson.assets.filter(
-            asset => asset.chunks.length > 0
-                && !asset.chunkNames.toString().includes("es5"))
-        .map(asset => asset.chunks).reduce((acc, val) => acc.concat(val), []);
+        let acceptedKeys = statsJson.assets.filter(asset => asset.chunks.length > 0 && !asset.chunkNames.toString().includes("es5"))
+          .map(asset => asset.chunks).reduce((acc, val) => acc.concat(val), []);
 
         // Collect all modules for the given keys
         const modules = collectModules(statsJson, acceptedKeys);
@@ -278,19 +272,17 @@ function collectModules(statsJson, acceptedChunks) {
     statsJson.modules.forEach(function (module) {
       // Add module if module chunks contain an accepted chunk and the module is generated-flow-imports.js module
       if (module.chunks.filter(key => acceptedChunks.includes(key)).length > 0
-          && (module.name.includes("generated-flow-imports.js")
-              || module.name.includes("generated-flow-imports-fallback.js"))) {
+          && (module.name.includes("generated-flow-imports.js") || module.name.includes("generated-flow-imports-fallback.js"))) {
         let subModules = [];
         // Create sub modules only if they are available
         if (module.modules) {
-          module.modules.filter(module => !module.name.includes("es5")).forEach(
-              function (module) {
-                const subModule = {
-                  name: module.name,
-                  source: module.source
-                };
-                subModules.push(subModule);
-              });
+          module.modules.filter(module => !module.name.includes("es5")).forEach(function (module) {
+            const subModule = {
+              name: module.name,
+              source: module.source
+            };
+            subModules.push(subModule);
+          });
         }
         const slimModule = {
           id: module.id,

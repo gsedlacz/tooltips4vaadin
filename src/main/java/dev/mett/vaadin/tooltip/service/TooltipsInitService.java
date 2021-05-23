@@ -30,7 +30,10 @@ public class TooltipsInitService implements VaadinServiceInitListener {
     event.getSource().addUIInitListener(uiInit -> {
       final UI ui = uiInit.getUI();
       try {
-        new Tooltips(ui);
+        if(Tooltips.get(ui) == null) {
+          new Tooltips(ui);
+        }
+
       } catch (TooltipsAlreadyInitializedException e) {
         log.log(Level.WARNING, "You have already initialized Tooltips for this UI: " + ui, new Throwable().fillInStackTrace());
       }
