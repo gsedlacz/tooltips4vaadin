@@ -2,6 +2,8 @@ import tippy, {followCursor, hideAll, sticky} from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 
+const TOOLTIP_TAG_ATTRIBUTE = 'tt4v';
+
 window.tooltips = {
   /* ### UTIL ### */
 
@@ -19,18 +21,18 @@ window.tooltips = {
     });
   },
 
-  getElement: function (classname) {
-    return document.querySelector('.' + classname);
+  getElement: function (frontendId) {
+    return document.querySelector('[tt4v=' + frontendId + ']');
   },
 
-  getElementFaulttolerant: async function (classname) {
+  getElementFaulttolerant: async function (frontendId) {
     const operation = this.getRetryOperation();
 
     return new Promise((resolve, reject) => {
       operation.attempt(async function () {
-        const element = window.tooltips.getElement(classname);
+        const element = window.tooltips.getElement(frontendId);
         const err = element === undefined || element == null
-            ? "Could not find element for class: " + classname : null;
+            ? "Could not find element for class: " + frontendId : null;
 
         if (operation.retry(err)) {
           return;
@@ -47,8 +49,8 @@ window.tooltips = {
 
   /* ### INTERACTION ### */
 
-  setTooltip: function (classname, config) {
-    return this.getElementFaulttolerant(classname)
+  setTooltip: function (frontendId, config) {
+    return this.getElementFaulttolerant(frontendId)
     .then(tooltipElement => {
       return window.tooltips.setTooltipToElement(tooltipElement, config);
     })
@@ -78,8 +80,8 @@ window.tooltips = {
     console.debug(tooltipElement)
   },
 
-  updateTooltip: function (classname, config) {
-    return this.getElementFaulttolerant(classname)
+  updateTooltip: function (frontendId, config) {
+    return this.getElementFaulttolerant(frontendId)
     .then(tooltipElement => {
       if (tooltipElement) {
         if (tooltipElement._tippy) {
@@ -96,11 +98,11 @@ window.tooltips = {
     })
   },
 
-  removeTooltip: function (classname, tooltipId) {
+  removeTooltip: function (frontendId, tooltipId) {
     window.tooltips.closeTooltipForced(tooltipId);
 
     /* destroy frontend tooltip on the element */
-    this.getElementFaulttolerant(classname)
+    this.getElementFaulttolerant(frontendId)
     .then(tooltipElement => {
       if (tooltipElement) {
         tooltipElement._tippy.destroy();

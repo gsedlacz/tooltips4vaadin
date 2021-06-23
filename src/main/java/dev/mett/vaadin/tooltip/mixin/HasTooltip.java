@@ -2,7 +2,6 @@ package dev.mett.vaadin.tooltip.mixin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.UI;
 import dev.mett.vaadin.tooltip.Tooltips;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
@@ -26,17 +25,12 @@ public interface HasTooltip extends HasElement {
   /**
    * Adds a tooltip to the implementing {@link Component}.
    *
-   * @param <T>           the type of a styleable component
    * @param tooltipConfig the configuration describing a tooltip
    * @param ui            {@link UI}
    */
-  @SuppressWarnings("unchecked")
-  default <T extends Component & HasStyle> void setTooltip(TooltipConfiguration tooltipConfig, UI ui) {
-    getElement().getComponent().ifPresent(comp -> {
-      if (comp instanceof HasStyle) {
-        Tooltips.get(ui).setTooltip((T) comp, tooltipConfig);
-      }
-    });
+  default void setTooltip(TooltipConfiguration tooltipConfig, UI ui) {
+    getElement().getComponent().ifPresent(comp ->
+        Tooltips.get(ui).setTooltip(comp, tooltipConfig));
   }
 
   /**
@@ -51,17 +45,13 @@ public interface HasTooltip extends HasElement {
   /**
    * Adds a tooltip to the implementing {@link Component}.
    *
-   * @param <T>     the type of a styleable component
    * @param tooltip the String to display (may contain html)
    * @param ui      {@link UI}
    */
-  @SuppressWarnings("unchecked")
-  default <T extends Component & HasStyle> void setTooltip(String tooltip, UI ui) {
-    getElement().getComponent().ifPresent(comp -> {
-      if (comp instanceof HasStyle) {
-        Tooltips.get(ui).setTooltip((T) comp, tooltip);
-      }
-    });
+  default void setTooltip(String tooltip, UI ui) {
+    getElement().getComponent().ifPresent(comp ->
+        Tooltips.get(ui).setTooltip(comp, tooltip)
+    );
   }
 
   /**
@@ -74,16 +64,12 @@ public interface HasTooltip extends HasElement {
   /**
    * Removes a tooltip from the implementing {@link Component}
    *
-   * @param <T> the type of a styleable component
-   * @param ui  {@link UI}
+   * @param ui {@link UI}
    */
-  @SuppressWarnings("unchecked")
-  default <T extends Component & HasStyle> void removeTooltip(UI ui) {
-    getElement().getComponent().ifPresent(comp -> {
-      if (comp instanceof HasStyle) {
-        Tooltips.get(ui).removeTooltip((T) comp);
-      }
-    });
+  default void removeTooltip(UI ui) {
+    getElement().getComponent().ifPresent(comp ->
+        Tooltips.get(ui).removeTooltip(comp)
+    );
   }
 
   /**
@@ -96,15 +82,12 @@ public interface HasTooltip extends HasElement {
   /**
    * Shows its tooltip if it exists.
    *
-   * @param <T> the type of a styleable component
-   * @param ui  {@link UI}
+   * @param ui {@link UI}
    */
-  default <T extends Component & HasStyle> void show(UI ui) {
-    getElement().getComponent().ifPresent(comp -> {
-      if (comp instanceof HasStyle) {
-        Tooltips.get(ui).showTooltip((T) comp);
-      }
-    });
+  default void show(UI ui) {
+    getElement().getComponent().ifPresent(comp ->
+        Tooltips.get(ui).showTooltip(comp)
+    );
   }
 
   /**
@@ -117,14 +100,11 @@ public interface HasTooltip extends HasElement {
   /**
    * Hides its tooltip if it exists.
    *
-   * @param <T> the type of a styleable component
-   * @param ui  {@link UI}
+   * @param ui {@link UI}
    */
-  default <T extends Component & HasStyle> void hide(UI ui) {
-    getElement().getComponent().ifPresent(comp -> {
-      if (comp instanceof HasStyle) {
-        Tooltips.get(ui).hideTooltip((T) comp);
-      }
-    });
+  default void hide(UI ui) {
+    getElement().getComponent().ifPresent(comp ->
+        Tooltips.get(ui).hideTooltip(comp)
+    );
   }
 }

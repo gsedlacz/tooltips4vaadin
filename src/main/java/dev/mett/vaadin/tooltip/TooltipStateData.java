@@ -23,7 +23,7 @@ class TooltipStateData implements Serializable {
   private WeakReference<Registration> detachReg;
   @Getter
   @Setter
-  private String cssClass;
+  private String frontendId;
   @Getter
   @Setter
   @NonNull
