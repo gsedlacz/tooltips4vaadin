@@ -1,8 +1,9 @@
-package dev.mett.vaadin.tooltip.example.provider;
+package dev.mett.vaadin.tooltip.example.examples;
 
 import com.vaadin.flow.component.Component;
 import dev.mett.vaadin.tooltip.config.TC_PLACEMENT;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
+import dev.mett.vaadin.tooltip.example.field.TooltipEmailField;
 
 public class ExtendedConfigurationExample {
 

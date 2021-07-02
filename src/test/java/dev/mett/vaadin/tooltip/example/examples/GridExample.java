@@ -1,4 +1,4 @@
-package dev.mett.vaadin.tooltip.example.provider;
+package dev.mett.vaadin.tooltip.example.examples;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
