@@ -55,7 +55,7 @@ window.tooltips = {
       return window.tooltips.setTooltipToElement(tooltipElement, config);
     })
     .catch(err => {
-      console.debug("setTooltip: " + err);
+      console.warn("setTooltip: " + err);
       return null;
     })
   },
@@ -77,7 +77,6 @@ window.tooltips = {
       // this id will be used by tooltips DOM id associated with the tooltipElement
       return tooltipElement._tippy.id;
     }
-    console.debug(tooltipElement)
   },
 
   updateTooltip: function (frontendId, config) {
@@ -94,7 +93,7 @@ window.tooltips = {
       }
     })
     .catch(err => {
-      console.debug("updateTooltip: " + err);
+      console.warn("updateTooltip: " + err);
     })
   },
 
@@ -109,7 +108,7 @@ window.tooltips = {
       }
     })
     .catch(err => {
-      console.debug("removeTooltip: " + err);
+      console.warn("removeTooltip: " + err);
     })
   },
 

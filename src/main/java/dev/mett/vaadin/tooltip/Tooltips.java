@@ -198,7 +198,8 @@ public final class Tooltips implements Serializable {
               tooltipState.getFrontendId(),
               tooltipState.getTooltipConfig().toJson()
           )
-              .then(json -> applyJsonTippyId(tooltipState, json))
+              .then(json ->
+                  applyJsonTippyId(tooltipState, json))
       );
     }
     // else: automatically uses the new value upon attach
@@ -257,8 +258,10 @@ public final class Tooltips implements Serializable {
             state.getTooltipConfig().toJson()
         )
             .then(
-                json -> applyJsonTippyId(state, json),
-                err -> log.warning(() -> "Tooltips: js error: " + err)
+                json ->
+                    applyJsonTippyId(state, json),
+                err ->
+                    log.warning(() -> "Tooltips: js error: " + err)
             );
       });
     };
@@ -339,9 +342,9 @@ public final class Tooltips implements Serializable {
       final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration) {
     Integer tippyId = state.getTippyId();
     if (tippyId != null) {
-      String uniqueClassName = state.getFrontendId();
+      String frontendId = state.getFrontendId();
 
-      callJs(JS_METHODS.REMOVE_TOOLTIP, afterFrontendDeregistration, uniqueClassName, tippyId);
+      callJs(JS_METHODS.REMOVE_TOOLTIP, afterFrontendDeregistration, frontendId, tippyId);
 
     } else {
       log.warning(() -> "Tippy frontend id is null for " + state);
@@ -478,7 +481,7 @@ public final class Tooltips implements Serializable {
 
   private static void ensureTagIsSet(final TooltipStateData state) {
     Component comp = state.getComponent().get();
-    if(comp != null) {
+    if (comp != null) {
       var element = comp.getElement();
 
       if (canTagBeApplied(state, element)) {
@@ -488,7 +491,7 @@ public final class Tooltips implements Serializable {
   }
 
   private static boolean canTagBeApplied(TooltipStateData state, Element element) {
-    if(element == null
+    if (element == null
         || state.getFrontendId() == null) {
       return false;
     }
