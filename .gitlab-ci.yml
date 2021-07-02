@@ -27,7 +27,7 @@ build_project:
   script:
     - mvn $MAVEN_CLI_OPTS install -Pdirectory
 
-deploy_master:
+build_release:
   image: maven:3.6-jdk-11-slim
   stage: deploy
   only:
