@@ -240,7 +240,7 @@ public final class Tooltips implements Serializable {
             TooltipsUtil.securelyAccessUI(
                 getUIFromComponent(Optional.of(component)),
                 () ->
-                    closeFrontendTooltip(state, Optional.empty())));
+                    closeFrontendTooltip(state)));
 
     state.setDetachReg(new WeakReference<>(detachReg));
   }
@@ -305,7 +305,6 @@ public final class Tooltips implements Serializable {
                   Optional.of(json -> {
                     removeTooltipState(state);
                     removeTooltipTag(component.getElement());
-                    ComponentUtil.setData(component, COMPONENT_STATE_KEY, null);
                   }));
             }
           });
@@ -322,13 +321,11 @@ public final class Tooltips implements Serializable {
   /**
    * Close a tooltip if it is still open.
    *
-   * @param state                       {@link TooltipStateData}
-   * @param afterFrontendDeregistration an optional action to execute once the deregistration has finished
+   * @param state {@link TooltipStateData}
    */
   private void closeFrontendTooltip(
-      final TooltipStateData state,
-      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration) {
-    callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, afterFrontendDeregistration, state.getTippyId());
+      final TooltipStateData state) {
+    callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, state.getTippyId());
   }
 
   /**
@@ -389,7 +386,7 @@ public final class Tooltips implements Serializable {
 
   private void callJs(
       String function,
-      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration,
+      final Optional<SerializableConsumer<JsonValue>> callbackAfterJsExecution,
       Serializable... parameters
   ) {
     var ui = getUIFromComponent(Optional.empty());
@@ -397,10 +394,8 @@ public final class Tooltips implements Serializable {
     TooltipsUtil.securelyAccessUI(ui, () -> {
       ui.getPage()
           .executeJs(function, parameters)
-          .then(afterFrontendDeregistration.orElse(nothing -> {
-                /* nothing */
-              }
-          ));
+          .then(callbackAfterJsExecution
+              .orElse(nothing -> { /* there is no optional action to perform */ }));
     });
   }
 
