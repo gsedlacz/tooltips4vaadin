@@ -10,13 +10,16 @@ This plugin allows you to define proper tooltips.
 
 ## Requirements
 
-1. Java 1.8
+1. Java 11
 2. Vaadin Flow version: 14+
 3. npm based build
 
-## Known Limitations
+## Breaking Changes
 
-1. Does not work with @PreserveOnRefresh
+### 1.X to 2.X
+
+* replaced 'Tooltips#removeAllTooltips' with 'Tooltips#closeAllTooltips'
+* build target changed from 1.8 to 11
 
 ## Usage
 
