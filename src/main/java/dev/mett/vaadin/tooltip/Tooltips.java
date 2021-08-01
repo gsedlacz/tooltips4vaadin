@@ -140,9 +140,15 @@ public final class Tooltips implements Serializable {
   ) {
     getTooltipState(component, true)
         .ifPresent(state -> {
-          state.getTooltipConfig().setContent(tooltip);
-          setTooltip(component, state);
+          if(doesTooltipChange(state, tooltip)) {
+            state.getTooltipConfig().setContent(tooltip);
+            setTooltip(component, state);
+          }
         });
+  }
+
+  private boolean doesTooltipChange(TooltipStateData state, String newTooltip) {
+    return newTooltip != null && !newTooltip.equals(state.getTooltipConfig().getContent());
   }
 
   /**
@@ -155,9 +161,15 @@ public final class Tooltips implements Serializable {
   ) {
     getTooltipState(component, true)
         .ifPresent(state -> {
-          state.setTooltipConfig(tooltipConfiguration);
-          setTooltip(component, state);
+          if(doesTooltipChange(state, tooltipConfiguration)){
+            state.setTooltipConfig(tooltipConfiguration);
+            setTooltip(component, state);
+          }
         });
+  }
+
+  private boolean doesTooltipChange(TooltipStateData state, TooltipConfiguration newConfiguration) {
+    return !state.getTooltipConfig().equals(newConfiguration);
   }
 
   /**
