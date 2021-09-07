@@ -201,7 +201,7 @@ public final class Tooltips implements Serializable {
     ensureTagIsSet(tooltipState);
 
     if (isComponentAttached(component)) {
-      var ui = getUIFromComponent(Optional.of(component));
+      UI ui = getUIFromComponent(Optional.of(component));
 
       TooltipsUtil.securelyAccessUI(
           ui,
@@ -220,10 +220,10 @@ public final class Tooltips implements Serializable {
   private UI getUIFromComponent(Optional<Component> component) {
 
     if (component.isPresent()) {
-      var possibleComponentUI = component.get().getUI();
+      Optional<UI> possibleComponentUI = component.get().getUI();
 
       if (possibleComponentUI.isPresent()) {
-        var componentUI = possibleComponentUI.get();
+        UI componentUI = possibleComponentUI.get();
 
         if (componentUI != defaultUI) {
 //          log.info("Preserve on refresh detected");
@@ -259,7 +259,7 @@ public final class Tooltips implements Serializable {
 
   private void registerWithTippyJS(Component component, TooltipStateData state) {
     Runnable register = () -> {
-      var ui = getUIFromComponent(Optional.ofNullable(component));
+      UI ui = getUIFromComponent(Optional.ofNullable(component));
 
       TooltipsUtil.securelyAccessUI(ui, () -> {
         ensureTagIsSet(state);
@@ -399,9 +399,9 @@ public final class Tooltips implements Serializable {
   private void callJs(
       String function,
       final Optional<SerializableConsumer<JsonValue>> callbackAfterJsExecution,
-      Serializable... parameters
-  ) {
-    var ui = getUIFromComponent(Optional.empty());
+      Serializable... parameters)
+  {
+    UI ui = getUIFromComponent(Optional.empty());
 
     TooltipsUtil.securelyAccessUI(ui, () -> {
       ui.getPage()
@@ -429,8 +429,8 @@ public final class Tooltips implements Serializable {
         return Optional.empty();
       }
 
-      var tooltipId = tooltipIdGenerator.incrementAndGet();
-      var tooltipStateData = createTooltipStateData(comp, tooltipId);
+      long tooltipId = tooltipIdGenerator.incrementAndGet();
+      TooltipStateData tooltipStateData = createTooltipStateData(comp, tooltipId);
 
       ComponentUtil.setData(
           comp,
@@ -458,7 +458,7 @@ public final class Tooltips implements Serializable {
       removeReg(state.getAttachReg());
       removeReg(state.getDetachReg());
 
-      var component = state.getComponent().get();
+      Component component = state.getComponent().get();
       if (component != null) {
         ComponentUtil.setData(
             component,
@@ -489,7 +489,7 @@ public final class Tooltips implements Serializable {
   private static void ensureTagIsSet(final TooltipStateData state) {
     Component comp = state.getComponent().get();
     if (comp != null) {
-      var element = comp.getElement();
+      Element element = comp.getElement();
 
       if (canTagBeApplied(state, element)) {
         applyTooltipTag(element, state.getFrontendId());
@@ -503,7 +503,7 @@ public final class Tooltips implements Serializable {
       return false;
     }
 
-    var tagValue = element.getAttribute(FRONTEND_TAG_NAME);
+    String tagValue = element.getAttribute(FRONTEND_TAG_NAME);
     return !(tagValue == null
         || tagValue.equals(state.getFrontendId()));
   }

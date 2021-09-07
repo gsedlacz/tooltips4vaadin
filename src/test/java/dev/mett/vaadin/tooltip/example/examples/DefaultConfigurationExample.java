@@ -8,12 +8,12 @@ import dev.mett.vaadin.tooltip.example.field.TooltipEmailField;
 public class DefaultConfigurationExample {
 
   public Component exampleDefaultConfig() {
-    var defaultConf = new TooltipConfiguration();
+    TooltipConfiguration defaultConf = new TooltipConfiguration();
     defaultConf.setArrow(true);
     defaultConf.setDelay(2000);
     Tooltips.setDefaultTooltipConfiguration(defaultConf);
 
-    var field = new TooltipEmailField();
+    TooltipEmailField field = new TooltipEmailField();
     field.setTooltip("test");
 
     return field;

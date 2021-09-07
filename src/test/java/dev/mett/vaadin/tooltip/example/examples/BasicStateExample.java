@@ -14,24 +14,24 @@ public class BasicStateExample {
   private final AtomicLong atomicLong = new AtomicLong();
 
   public <P extends Component & HasComponents> Component getBasicExample(P parent) {
-    var emailField = new TooltipEmailField();
+    TooltipEmailField emailField = new TooltipEmailField();
     emailField.setHeight("fit-content");
     emailField.setId("abc");
     emailField.setTooltip("initial Value");
 
-    var btChangeTooltip = new Button("change tooltip",
+    Button btChangeTooltip = new Button("change tooltip",
         evt -> emailField.setTooltip("value-" + atomicLong.getAndIncrement()));
 
-    var btRemoveTooltip = new Button("remove tooltip",
+    Button btRemoveTooltip = new Button("remove tooltip",
         evt -> emailField.removeTooltip());
 
-    var btShowTooltip = new Button("show",
+    Button btShowTooltip = new Button("show",
         evt -> emailField.show());
 
-    var btHideTooltip = new Button("hide",
+    Button btHideTooltip = new Button("hide",
         evt -> emailField.hide());
 
-    var btDetachAttachField = new Button("detach/attach field", evt -> {
+    Button btDetachAttachField = new Button("detach/attach field", evt -> {
       if (parent.getChildren().anyMatch(c -> emailField == c)) {
         parent.remove(emailField);
       } else {
@@ -39,10 +39,10 @@ public class BasicStateExample {
       }
     });
 
-    var btCloseAll = new Button("close all",
+    Button btCloseAll = new Button("close all",
         evt -> Tooltips.getCurrent().closeAllTooltips());
 
-    var btCloseUI = new Button("close UI", evt ->
+    Button btCloseUI = new Button("close UI", evt ->
         evt.getSource().getUI().ifPresent(UI::close));
 
     return new VerticalLayout(
