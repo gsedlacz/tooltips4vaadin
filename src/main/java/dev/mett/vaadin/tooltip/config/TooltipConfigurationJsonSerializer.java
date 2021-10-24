@@ -12,6 +12,8 @@ import elemental.json.impl.JreJsonObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -29,10 +31,13 @@ public class TooltipConfigurationJsonSerializer {
       return isNullabel ? new JreJsonNull() : null;
     }
     if (bean instanceof Collection) {
-      return toJson((Collection<?>) bean);
+      return fromCollection((Collection<?>) bean);
     }
     if (bean.getClass().isArray()) {
-      return toJsonArray(bean);
+      return fromCollection(bean);
+    }
+    if (bean instanceof Map) {
+      return fromMap((Map<String, Object>) bean);
     }
 
     Optional<JsonValue> simpleType = tryToConvertToSimpleType(bean);
@@ -53,14 +58,14 @@ public class TooltipConfigurationJsonSerializer {
       return (JsonValue) bean;
     }
 
-    return processFields(bean);
+    return fromFields(bean);
   }
 
-  private static <T> JsonObject processFields(T bean) {
-    return processFields(bean, bean.getClass());
+  private static <T> JsonObject fromFields(T bean) {
+    return fromFields(bean, bean.getClass());
   }
 
-  private static <T> JsonObject processFields(T bean, Class<? extends T> clazz) {
+  private static <T> JsonObject fromFields(T bean, Class<? extends T> clazz) {
     JsonObject json;
     Class<?> superclass = clazz.getSuperclass();
 
@@ -81,18 +86,18 @@ public class TooltipConfigurationJsonSerializer {
             }
 
         } catch (IllegalArgumentException | IllegalAccessException e) {
-          log.warning("Faield to convert field=" + field + " of bean=" + bean);
+          log.warning("Failed to convert field=" + field + " of bean=" + bean);
         }
       }
 
     } else {
-      json = processFields(bean, superclass);
+      json = fromFields(bean, superclass);
     }
 
     return json;
   }
 
-  public static JsonArray toJson(Collection<?> beans) {
+  public static JsonArray fromCollection(Collection<?> beans) {
     JsonArray array = Json.createArray();
     if (beans == null) {
       return array;
@@ -104,7 +109,7 @@ public class TooltipConfigurationJsonSerializer {
     return array;
   }
 
-  private static JsonArray toJsonArray(Object javaArray) {
+  private static JsonArray fromCollection(Object javaArray) {
     int length = Array.getLength(javaArray);
     JsonArray array = Json.createArray();
     for (int i = 0; i < length; i++) {
@@ -114,6 +119,16 @@ public class TooltipConfigurationJsonSerializer {
         }
     }
     return array;
+  }
+
+  private static JsonObject fromMap(Map<String, Object> map) {
+    JsonObject json = Json.createObject();
+
+    for(Entry<String, Object> entry : map.entrySet()) {
+      json.put(entry.getKey(), toJson(entry.getValue()));
+    }
+
+    return json;
   }
 
   private static Optional<JsonValue> tryToConvertToSimpleType(Object bean) {

@@ -4,6 +4,8 @@ import dev.mett.vaadin.tooltip.Tooltips;
 import dev.mett.vaadin.tooltip.exception.InvalidTooltipContentException;
 import elemental.json.JsonObject;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -166,6 +168,14 @@ public class TooltipConfiguration implements Serializable {
   private TC_PLACEMENT placement;
 
   /**
+   * Define arbitrary popper options
+   * <p>
+   * Documentation: https://atomiks.github.io/tippyjs/v6/all-props/#popperoptions
+   */
+  @Getter
+  private Map<String, Object> popperOptions;
+
+  /**
    * Specifies the role attribute on the tippy element
    */
   @Getter
@@ -215,7 +225,8 @@ public class TooltipConfiguration implements Serializable {
   @Setter
   private Integer zIndex;
 
-  public JsonObject toJson() {
+
+  public JsonObject toJsonObject() {
     return (JsonObject) TooltipConfigurationJsonSerializer.toJson(this);
   }
 
@@ -334,5 +345,21 @@ public class TooltipConfiguration implements Serializable {
    */
   public void setTouch(String touchTrigger, int duration) {
     this.touch = new Object[]{touchTrigger, duration};
+  }
+
+  /**
+   * Add a popper option
+   *
+   * @param key json key
+   * @param value json value (arbitrary object)
+   *
+   * @see <a href="https://atomiks.github.io/tippyjs/v6/all-props/#popperoptions">Official Documentation</a>
+   */
+  public void addPopperOption(String key, Object value) {
+    if(popperOptions == null) {
+      popperOptions = new HashMap<>();
+    }
+
+    popperOptions.put(key, value);
   }
 }

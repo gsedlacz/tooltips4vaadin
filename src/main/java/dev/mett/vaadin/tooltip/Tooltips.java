@@ -208,7 +208,7 @@ public final class Tooltips implements Serializable {
           () -> ui.getPage().executeJs(
               JS_METHODS.UPDATE_TOOLTIP,
               tooltipState.getFrontendId(),
-              tooltipState.getTooltipConfig().toJson()
+              tooltipState.getTooltipConfig().toJsonObject()
           )
               .then(json ->
                   applyJsonTippyId(tooltipState, json))
@@ -267,7 +267,7 @@ public final class Tooltips implements Serializable {
         ui.getPage().executeJs(
             JS_METHODS.SET_TOOLTIP,
             state.getFrontendId(),
-            state.getTooltipConfig().toJson()
+            state.getTooltipConfig().toJsonObject()
         )
             .then(
                 json ->
