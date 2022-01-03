@@ -11,7 +11,7 @@ import lombok.Data;
 
 public class GridExample {
 
-  private Grid<GridData> exampleGrid() {
+  public Grid<GridData> exampleGrid() {
     Tooltips tt = Tooltips.getCurrent();
 
     List<GridData> data = new ArrayList<>();
