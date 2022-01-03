@@ -1,4 +1,4 @@
-package dev.mett.vaadin.tooltip.test;
+package dev.mett.vaadin.tooltip.unitTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

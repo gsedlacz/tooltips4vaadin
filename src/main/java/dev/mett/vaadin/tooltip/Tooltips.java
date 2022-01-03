@@ -5,6 +5,7 @@ import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.SerializableConsumer;
+import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.shared.Registration;
 import dev.mett.vaadin.tooltip.config.TooltipConfiguration;
 import dev.mett.vaadin.tooltip.exception.TooltipsAlreadyInitializedException;
@@ -37,13 +38,13 @@ public final class Tooltips implements Serializable {
 
   public interface JS_METHODS {
 
-    String SET_TOOLTIP = "return window.tooltips.setTooltip($0,$1)";
-    String UPDATE_TOOLTIP = "window.tooltips.updateTooltip($0,$1)";
-    String CLOSE_TOOLTIP_FORCED = "window.tooltips.closeTooltipForced($0)";
-    String REMOVE_TOOLTIP = "window.tooltips.removeTooltip($0,$1)";
+    String SET_TOOLTIP = "return window.tooltips.setTooltipToElement($0,$1)"; // DOM-Element, tooltipConfig
+    String UPDATE_TOOLTIP = "window.tooltips.updateTooltip($0,$1)"; // DOM-Element, tooltipConfig
+    String CLOSE_TOOLTIP_FORCED = "window.tooltips.closeTooltipForced($0)"; // tippyId
+    String REMOVE_TOOLTIP = "window.tooltips.removeTooltip($0,$1)"; // frontendId, tippyId
     String CLOSE_ALL_TOOLTIPS = "window.tooltips.closeAllTooltips()";
-    String SHOW_TOOLTIP = "window.tooltips.showTooltip($0)";
-    String HIDE_TOOLTIP = "window.tooltips.hideTooltip($0)";
+    String SHOW_TOOLTIP = "window.tooltips.showTooltip($0)"; // DOM-Element
+    String HIDE_TOOLTIP = "window.tooltips.hideTooltip($0)"; // DOM-Element
   }
 
   /** STATIC METHODS **/
@@ -140,7 +141,7 @@ public final class Tooltips implements Serializable {
   ) {
     getTooltipState(component, true)
         .ifPresent(state -> {
-          if(doesTooltipChange(state, tooltip)) {
+          if (doesTooltipChange(state, tooltip)) {
             state.getTooltipConfig().setContent(tooltip);
             setTooltip(component, state);
           }
@@ -161,7 +162,7 @@ public final class Tooltips implements Serializable {
   ) {
     getTooltipState(component, true)
         .ifPresent(state -> {
-          if(doesTooltipChange(state, tooltipConfiguration)){
+          if (doesTooltipChange(state, tooltipConfiguration)) {
             state.setTooltipConfig(tooltipConfiguration);
             setTooltip(component, state);
           }
@@ -198,26 +199,19 @@ public final class Tooltips implements Serializable {
   }
 
   private void updateKnownComponent(Component component, TooltipStateData tooltipState) {
-    ensureTagIsSet(tooltipState);
-
     if (isComponentAttached(component)) {
-      UI ui = getUIFromComponent(Optional.of(component));
-
-      TooltipsUtil.securelyAccessUI(
-          ui,
-          () -> ui.getPage().executeJs(
-              JS_METHODS.UPDATE_TOOLTIP,
-              tooltipState.getFrontendId(),
-              tooltipState.getTooltipConfig().toJsonObject()
-          )
-              .then(json ->
-                  applyJsonTippyId(tooltipState, json))
-      );
+      callJsOnComponent(
+          component,
+          JS_METHODS.UPDATE_TOOLTIP,
+          new Serializable[]{
+              component,
+              tooltipState.getTooltipConfig().toJsonObject()},
+          json -> applyJsonTippyId(tooltipState, json));
     }
     // else: automatically uses the new value upon attach
   }
 
-  private UI getUIFromComponent(Optional<Component> component) {
+  private UI getUI(Optional<Component> component) {
 
     if (component.isPresent()) {
       Optional<UI> possibleComponentUI = component.get().getUI();
@@ -250,33 +244,14 @@ public final class Tooltips implements Serializable {
     Registration detachReg = component.addDetachListener(
         evt ->
             TooltipsUtil.securelyAccessUI(
-                getUIFromComponent(Optional.of(component)),
-                () ->
-                    closeFrontendTooltip(state)));
+                getUI(Optional.of(component)),
+                () -> closeFrontendTooltip(state.getTippyId())));
 
     state.setDetachReg(new WeakReference<>(detachReg));
   }
 
   private void registerWithTippyJS(Component component, TooltipStateData state) {
-    Runnable register = () -> {
-      UI ui = getUIFromComponent(Optional.ofNullable(component));
-
-      TooltipsUtil.securelyAccessUI(ui, () -> {
-        ensureTagIsSet(state);
-
-        ui.getPage().executeJs(
-            JS_METHODS.SET_TOOLTIP,
-            state.getFrontendId(),
-            state.getTooltipConfig().toJsonObject()
-        )
-            .then(
-                json ->
-                    applyJsonTippyId(state, json),
-                err ->
-                    log.warning(() -> "Tooltips: js error: " + err)
-            );
-      });
-    };
+    Runnable register = getRegistrationRunnable(component, state);
 
     if (isComponentAttached(component)) {
       register.run();
@@ -284,6 +259,18 @@ public final class Tooltips implements Serializable {
 
     Registration attachReg = component.addAttachListener(evt -> register.run());
     state.setAttachReg(new WeakReference<>(attachReg));
+  }
+
+  private Runnable getRegistrationRunnable(Component component, TooltipStateData state) {
+    return () -> {
+      callJsOnComponent(
+          component,
+          JS_METHODS.SET_TOOLTIP,
+          new Serializable[]{
+              component,
+              state.getTooltipConfig().toJsonObject()},
+          json -> applyJsonTippyId(state, json));
+    };
   }
 
   private void generateAndApplyUniqueFrontendId(Component component, TooltipStateData state) {
@@ -314,10 +301,10 @@ public final class Tooltips implements Serializable {
 
               deregisterTooltip(
                   state,
-                  Optional.of(json -> {
+                  () -> {
                     removeTooltipState(state);
                     removeTooltipTag(component.getElement());
-                  }));
+                  });
             }
           });
     }
@@ -327,37 +314,43 @@ public final class Tooltips implements Serializable {
    * Closes all currently opened tooltips.
    */
   public void closeAllTooltips() {
-    callJs(JS_METHODS.CLOSE_ALL_TOOLTIPS);
+    callJsOnPage(JS_METHODS.CLOSE_ALL_TOOLTIPS);
   }
 
   /**
    * Close a tooltip if it is still open.
    *
-   * @param state {@link TooltipStateData}
+   * @param tippyId the id of the tooltip itself
    */
-  private void closeFrontendTooltip(
-      final TooltipStateData state) {
-    callJs(JS_METHODS.CLOSE_TOOLTIP_FORCED, state.getTippyId());
+  private void closeFrontendTooltip(Integer tippyId) {
+    callJsOnPage(JS_METHODS.CLOSE_TOOLTIP_FORCED, new Serializable[]{tippyId});
   }
 
   /**
    * Deregisters a tooltip in the frontend (tippy).
+   * Even if the frontend operation fails the afterFrontendDeregistration is guaranteed to be executed.
    *
    * @param state                       {@link TooltipStateData}
    * @param afterFrontendDeregistration an action to perform after the element has been deregistered
    */
   private void deregisterTooltip(
-      final TooltipStateData state,
-      final Optional<SerializableConsumer<JsonValue>> afterFrontendDeregistration) {
+      TooltipStateData state,
+      SerializableRunnable afterFrontendDeregistration) {
     Integer tippyId = state.getTippyId();
     if (tippyId != null) {
       String frontendId = state.getFrontendId();
 
-      callJs(JS_METHODS.REMOVE_TOOLTIP, afterFrontendDeregistration, frontendId, tippyId);
+      callJsOnPage(
+          JS_METHODS.REMOVE_TOOLTIP,
+          new Serializable[]{
+              frontendId,
+              tippyId},
+          json -> afterFrontendDeregistration.run(),
+          onError -> afterFrontendDeregistration.run());
 
     } else {
       log.warning(() -> "Tippy frontend id is null for " + state);
-      afterFrontendDeregistration.ifPresent(task -> task.accept(null));
+      afterFrontendDeregistration.run();
     }
   }
 
@@ -369,7 +362,7 @@ public final class Tooltips implements Serializable {
    * @param component {@link Component}
    */
   public void showTooltip(Component component) {
-    callJs(JS_METHODS.SHOW_TOOLTIP, component);
+    callJsOnComponent(component, JS_METHODS.SHOW_TOOLTIP, new Serializable[]{component});
   }
 
   /**
@@ -378,7 +371,7 @@ public final class Tooltips implements Serializable {
    * @param component {@link Component}
    */
   public void hideTooltip(Component component) {
-    callJs(JS_METHODS.HIDE_TOOLTIP, component);
+    callJsOnComponent(component, JS_METHODS.HIDE_TOOLTIP, new Serializable[]{component});
   }
 
   /* *** CONFIG *** */
@@ -396,27 +389,99 @@ public final class Tooltips implements Serializable {
 
   /* *** UTIL *** */
 
-  private void callJs(
+  private void callJsOnComponent(
+      Component component,
       String function,
-      final Optional<SerializableConsumer<JsonValue>> callbackAfterJsExecution,
-      Serializable... parameters)
-  {
-    UI ui = getUIFromComponent(Optional.empty());
+      Serializable[] parameters,
+      SerializableConsumer<JsonValue> callbackAfterJsExecution,
+      SerializableConsumer<String> callbackAfterJsExecutionOnError) {
+    UI ui = getUI(Optional.of(component));
 
     TooltipsUtil.securelyAccessUI(ui, () -> {
-      ui.getPage()
-          .executeJs(function, parameters)
-          .then(callbackAfterJsExecution
-              .orElse(nothing -> { /* there is no optional action to perform */ }));
+      getTooltipState(component, true)
+          .ifPresent(Tooltips::ensureTagIsSet);
+
+      // TODO: cancel handle pendingjsresult
+      component.getElement().executeJs(
+              function,
+              parameters
+          )
+          .then(callbackAfterJsExecution,
+              callbackAfterJsExecutionOnError);
     });
   }
 
-  private void callJs(
+  private void callJsOnComponent(
+      Component component,
       String function,
-      Serializable... parameters
-  ) {
-    callJs(function, Optional.empty(), parameters);
+      Serializable[] parameters,
+      SerializableConsumer<JsonValue> callbackAfterJsExecution) {
+    callJsOnComponent(
+        component,
+        function,
+        parameters,
+        callbackAfterJsExecution,
+        err -> log.warning(() -> "Tooltips: js error: " + err));
   }
+
+  private void callJsOnComponent(
+      Component component,
+      String function,
+      Serializable[] parameters) {
+    callJsOnComponent(
+        component,
+        function,
+        parameters,
+        nothing -> { /* there is no optional action to perform */ });
+  }
+
+  private void callJsOnComponent(
+      Component component,
+      String function) {
+    callJsOnComponent(component, function, new Serializable[0]);
+  }
+
+  private void callJsOnPage(
+      String function,
+      Serializable[] parameters,
+      SerializableConsumer<JsonValue> callbackAfterJsExecution,
+      SerializableConsumer<String> callbackAfterJsExecutionOnError) {
+    UI ui = getUI(Optional.empty());
+
+    TooltipsUtil.securelyAccessUI(ui, () ->
+        // TODO: cancel handle pendingjsresult
+        ui.getPage()
+            .executeJs(function, parameters)
+            .then(
+                callbackAfterJsExecution,
+                callbackAfterJsExecutionOnError));
+  }
+
+  private void callJsOnPage(
+      String function,
+      Serializable[] parameters,
+      SerializableConsumer<JsonValue> callbackAfterJsExecution) {
+    callJsOnPage(
+        function,
+        parameters,
+        callbackAfterJsExecution,
+        err -> log.warning(() -> "Tooltips: js error: " + err));
+  }
+
+  private void callJsOnPage(
+      String function,
+      Serializable[] parameters) {
+    callJsOnPage(
+        function,
+        parameters,
+        nothing -> { /* there is no optional action to perform */ });
+  }
+
+  private void callJsOnPage(
+      String function) {
+    callJsOnPage(function, new Serializable[0]);
+  }
+
 
   private Optional<TooltipStateData> getTooltipState(final Component comp, final boolean register) {
     TooltipStateData state = (TooltipStateData) ComponentUtil.getData(comp, COMPONENT_STATE_KEY);
@@ -509,6 +574,7 @@ public final class Tooltips implements Serializable {
   }
 
   private static void applyTooltipTag(Element element, String tagValue) {
+    // THE ATTRIBUTE WONT BE RENDERED UNTIL ITS VISIBLE=TRUE
     element.setAttribute(FRONTEND_TAG_NAME, tagValue);
   }
 

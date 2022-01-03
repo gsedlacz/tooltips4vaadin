@@ -60,23 +60,12 @@ window.tooltips = {
   },
 
   _removeTooltipFromElement: function (tooltipElement) {
-    if (tooltipElement) {
+    if (tooltipElement && tooltipElement._tippy) {
       tooltipElement._tippy.destroy();
     }
   },
 
   /* ### INTERACTION ### */
-
-  setTooltip: function (frontendId, config) {
-    return this._getElementFaulttolerant(frontendId)
-    .then(tooltipElement => {
-      return this.setTooltipToElement(tooltipElement, config);
-    })
-    .catch(err => {
-      console.warn("setTooltip: " + err);
-      return null;
-    })
-  },
 
   setTooltipToElement: function (tooltipElement, config) {
     if (tooltipElement) {
@@ -92,23 +81,19 @@ window.tooltips = {
     }
   },
 
-  updateTooltip: function (frontendId, config) {
-    return this._getElementFaulttolerant(frontendId)
-    .then(tooltipElement => {
-      if (tooltipElement) {
-        if (tooltipElement._tippy) {
-          this._setupTippyPlugins(config)
-          tooltipElement._tippy.setProps(config);
+  updateTooltip: function (tooltipElement, config) {
+    if (tooltipElement) {
+      if (tooltipElement._tippy) {
+        this._setupTippyPlugins(config)
+        tooltipElement._tippy.setProps(config);
 
-        } else {
-          // lost its _tippy sub entry for some reason
-          return this.setTooltipToElement(tooltipElement, config);
-        }
+      } else {
+        // lost its _tippy sub entry for some reason
+        return this.setTooltipToElement(tooltipElement, config);
       }
-    })
-    .catch(err => {
-      console.warn("updateTooltip: " + err);
-    })
+    } else {
+      console.warn("No tooltipElement supplied during 'updateTooltip'")
+    }
   },
 
   removeTooltip: function (frontendId, tooltipId) {
@@ -126,8 +111,8 @@ window.tooltips = {
   closeTooltipForced: function (tooltipId) {
     /* tippy fails to remove tooltips whose registered component
        gets removed during the open animation */
-    const tooltipElement = document.getElementById('tippy-' + tooltipId);
-    this._removeTooltipFromElement(tooltipElement)
+    const tooltipElement = document.getElementById(`tippy-${tooltipId}`);
+    this._removeTooltipFromElement(tooltipElement);
   },
 
   closeAllTooltips: function () {
