@@ -75,8 +75,8 @@ public interface HasTooltip extends HasElement {
   /**
    * Shows its tooltip if it exists.
    */
-  default void show() {
-    show(UI.getCurrent());
+  default void showTooltip() {
+    showTooltip(UI.getCurrent());
   }
 
   /**
@@ -84,7 +84,7 @@ public interface HasTooltip extends HasElement {
    *
    * @param ui {@link UI}
    */
-  default void show(UI ui) {
+  default void showTooltip(UI ui) {
     getElement().getComponent().ifPresent(comp ->
         Tooltips.get(ui).showTooltip(comp)
     );
@@ -93,8 +93,8 @@ public interface HasTooltip extends HasElement {
   /**
    * Hides its tooltip if it exists.
    */
-  default void hide() {
-    hide(UI.getCurrent());
+  default void hideTooltip() {
+    hideTooltip(UI.getCurrent());
   }
 
   /**
@@ -102,7 +102,7 @@ public interface HasTooltip extends HasElement {
    *
    * @param ui {@link UI}
    */
-  default void hide(UI ui) {
+  default void hideTooltip(UI ui) {
     getElement().getComponent().ifPresent(comp ->
         Tooltips.get(ui).hideTooltip(comp)
     );
