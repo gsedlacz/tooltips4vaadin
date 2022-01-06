@@ -2,8 +2,6 @@ import tippy, {followCursor, hideAll, sticky} from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import retry from 'retry';
 
-const TOOLTIP_TAG_ATTRIBUTE = 'tt4v';
-
 window.tooltips = {
   /* ### UTIL ### */
 
