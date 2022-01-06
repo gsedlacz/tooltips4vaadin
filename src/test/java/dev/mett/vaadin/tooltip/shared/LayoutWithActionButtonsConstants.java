@@ -1,7 +1,7 @@
 package dev.mett.vaadin.tooltip.shared;
 
 public interface LayoutWithActionButtonsConstants {
-  String ID_TEXTFIELD = "target";
+  String ID_TOOLTIP_COMPONENT = "target";
 
   String ID_TOOLTIP_CHANGE_OR_SET_BT = "bt-tooltip-change";
   String ID_TOOLTIP_REMOVE_BT = "bt-tooltip-remove";

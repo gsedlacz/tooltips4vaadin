@@ -14,7 +14,9 @@ import dev.mett.vaadin.tooltip.example.views.PreserveOnRefreshDemoView;
 
 public class ExampleApplication extends AppLayout implements RouterLayout {
   public ExampleApplication() {
-    addToNavbar(new DrawerToggle(), new H1("Tooltips4Vaadin - Examples"));
+    H1 title = new H1("Tooltips4Vaadin - Examples");
+    title.getElement().setAttribute("style", "font-size:large;margin:.2em;");
+    addToNavbar(new DrawerToggle(), title);
 
     addToDrawer(getTabs());
   }
