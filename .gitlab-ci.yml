@@ -11,8 +11,12 @@ variables:
 # Cache downloaded dependencies and plugins between builds.
 # To keep cache across branches add 'key: "$CI_JOB_NAME"'
 cache:
+  key: "$CI_JOB_NAME"
   paths:
     - .m2/repository
+    # TODO: unify node_modules
+    - ./lib/node_modules
+    - ./demo/node_modules
 
 stages:
   - build
@@ -22,9 +26,8 @@ stages:
 build_project:
   image: maven:3.6-jdk-11-slim
   stage: build
-  except:
-    - master
   script:
+    - pwd
     - mvn $MAVEN_CLI_OPTS install -Pdirectory
 
 build_release:

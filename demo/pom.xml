@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>tooltip</artifactId>
+    <groupId>dev.mett.vaadin</groupId>
+    <version>${revision}</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>demo</artifactId>
+
+  <properties>
+
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>shared</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <!-- Replace artifactId with vaadin-core to use only free components -->
+      <artifactId>vaadin-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>spring-boot:run</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <!-- Clean build and startup time for Vaadin apps sometimes may exceed
+             the default Spring Boot's 30sec timeout.  -->
+        <configuration>
+          <wait>500</wait>
+          <maxAttempts>240</maxAttempts>
+        </configuration>
+      </plugin>
+
+      <!--
+          Take care of synchronizing java dependencies and imports in
+          package.json and main.js files.
+          It also creates webpack.config.js if not exists yet.
+      -->
+      <plugin>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-maven-plugin</artifactId>
+        <version>${vaadin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-frontend</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- does not include custom js files -->
+  <!-- requires a symlink like "tooltips4vaadin\frontend> mklink /D js ..\src\main\resources\META-INF\resources\frontend\js" -->
+<!--  <build>-->
+<!--    <plugins>-->
+<!--      <plugin>-->
+<!--        <groupId>com.vaadin</groupId>-->
+<!--        <artifactId>vaadin-maven-plugin</artifactId>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>build-frontend</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+
+<!--      <plugin>-->
+<!--        <groupId>org.eclipse.jetty</groupId>-->
+<!--        <artifactId>jetty-maven-plugin</artifactId>-->
+<!--        <version>${jetty.version}</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <phase>integration-test</phase>-->
+<!--            <goals>-->
+<!--              <goal>run</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--        <configuration>-->
+<!--          <scanIntervalSeconds>-1</scanIntervalSeconds>-->
+<!--          &lt;!&ndash; Use test scope because the UI/demo classes are in the test package. &ndash;&gt;-->
+<!--&lt;!&ndash;          <useTestScope>true</useTestScope>&ndash;&gt;-->
+<!--&lt;!&ndash;          <supportedPackagings>&ndash;&gt;-->
+<!--&lt;!&ndash;            <supportedPackaging>jar</supportedPackaging>&ndash;&gt;-->
+<!--&lt;!&ndash;          </supportedPackagings>&ndash;&gt;-->
+<!--        </configuration>-->
+<!--      </plugin>-->
+<!--    </plugins>-->
+<!--  </build>-->
+
+
+</project>

@@ -7,26 +7,49 @@
   <groupId>dev.mett.vaadin</groupId>
   <artifactId>tooltip</artifactId>
   <version>${revision}</version>
+
   <name>Tooltips4Vaadin</name>
   <description>Proper tooltips for Vaadin Flow.</description>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
 
   <properties>
-    <revision>2.3.0</revision>
+    <revision>3.0.0</revision>
 
-    <vaadin.version>14.5.3</vaadin.version>
-
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <jetty.version>9.4.15.v20190215</jetty.version>
+    <!-- dep - build -->
+    <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+    <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+    <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+    <maven-jar-plugin.version>3.1.0</maven-jar-plugin.version>
+    <flatten-maven-plugin.version>1.2.2</flatten-maven-plugin.version>
+
+    <!-- dep - lib -->
+    <vaadin.version>23.0.7</vaadin.version>
+    <lombok.version>1.18.22</lombok.version>
+    <servlet-api.version>2.5</servlet-api.version>
+
+    <!-- dep - demo -->
+    <spring-boot-starter-parent.version>2.6.7</spring-boot-starter-parent.version>
+
+    <!-- dep - test -->
+    <junit-jupiter-api.version>5.8.2</junit-jupiter-api.version>
+    <selenium.version>4.1.1</selenium.version>
+    <webdrivermanager.version>5.0.3</webdrivermanager.version>
   </properties>
 
-  <organization>
-    <name>Gerrit Sedlaczek</name>
-  </organization>
+  <developers>
+    <developer>
+      <name>Gerrit Sedlaczek</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://gitlab.com/gsedlacz/tooltips4vaadin</url>
+  </scm>
 
   <licenses>
     <license>
@@ -36,19 +59,10 @@
     </license>
   </licenses>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-bom</artifactId>
-        <type>pom</type>
-        <scope>import</scope>
-        <version>${vaadin.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <repositories>
+    <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
+
+    <!-- Main Maven repository -->
     <repository>
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2</url>
@@ -57,24 +71,25 @@
       </snapshots>
     </repository>
     <repository>
+      <id>vaadin-prereleases</id>
+      <url>
+        https://maven.vaadin.com/vaadin-prereleases/
+      </url>
+    </repository>
+    <!-- Repository used by many Vaadin add-ons -->
+    <repository>
       <id>Vaadin Directory</id>
       <url>https://maven.vaadin.com/vaadin-addons</url>
-    </repository>
-    <!-- Repository needed for prerelease versions of Vaadin -->
-    <repository>
-      <id>Vaadin prereleases</id>
-      <url>https://maven.vaadin.com/vaadin-prereleases</url>
-    </repository>
-    <!-- Repository needed for the snapshot versions of Vaadin -->
-    <repository>
-      <id>vaadin-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
 
-    <repository>
-      <id>gitlab-maven</id>
-      <url>${env.CI_SERVER_URL}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
-    </repository>
+    <!-- Gitlab Maven repository -->
+<!--    <repository>-->
+<!--      <id>gitlab-maven</id>-->
+<!--      <url>${env.CI_SERVER_URL}/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>-->
+<!--    </repository>-->
   </repositories>
 
   <distributionManagement>
@@ -89,6 +104,7 @@
   </distributionManagement>
 
   <pluginRepositories>
+    <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
     <pluginRepository>
       <id>central</id>
       <url>https://repo.maven.apache.org/maven2</url>
@@ -96,268 +112,163 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
-    <!-- Repository needed for prerelease versions of Vaadin -->
     <pluginRepository>
-      <id>Vaadin prereleases</id>
-      <url>https://maven.vaadin.com/vaadin-prereleases</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>vaadin-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
+      <id>vaadin-prereleases</id>
+      <url>
+        https://maven.vaadin.com/vaadin-prereleases/
+      </url>
     </pluginRepository>
   </pluginRepositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.vaadin</groupId>
-      <artifactId>vaadin-core</artifactId>
-      <exclusions>
-        <!-- Webjars are only needed when running in Vaadin 13 compatibility
-          mode in V14. Your add-on can support npm in the same version mode and V13
-          compatiblity mode at the same time, or with separate versions. Any V13 version
-          should work with the compatibility mode in V14. -->
-        <exclusion>
-          <groupId>com.vaadin.webjar</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.webjars.bowergithub.insites</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.webjars.bowergithub.polymer</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.webjars.bowergithub.polymerelements</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.webjars.bowergithub.vaadin</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.webjars.bowergithub.webcomponents</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <!-- import bom -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${spring-boot-starter-parent.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-bom</artifactId>
+        <version>${vaadin.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>org.seleniumhq.selenium</groupId>-->
-<!--      <artifactId>selenium-java</artifactId>-->
-<!--      <version>4.1.1</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>io.github.bonigarcia</groupId>-->
-<!--      <artifactId>webdrivermanager</artifactId>-->
-<!--      <version>5.0.3</version>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
+      <!-- INTERNAL -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>lib</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>shared</artifactId>
+        <version>${revision}</version>
+      </dependency>
 
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+        <scope>provided</scope>
+      </dependency>
 
-    <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
+      <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>${servlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
 
-    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.8.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+      <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit-jupiter-api.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.github.bonigarcia</groupId>
+        <artifactId>webdrivermanager</artifactId>
+        <version>${webdrivermanager.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>lib</module>
+    <module>shared</module>
+    <module>demo</module>
+    <module>test</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <id>libonly</id>
+      <modules>
+        <module>lib</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <!-- parent -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>flatten-maven-plugin</artifactId>
+          <version>${flatten-maven-plugin.version}</version>
+          <configuration>
+            <flattenMode>oss</flattenMode>
+          </configuration>
+          <executions>
+            <!-- enable flattening -->
+            <execution>
+              <id>flatten</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>flatten</goal>
+              </goals>
+            </execution>
+            <!-- ensure proper cleanup -->
+            <execution>
+              <id>flatten.clean</id>
+              <phase>clean</phase>
+              <goals>
+                <goal>clean</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <!-- lib -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven-assembly-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven-source-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <archive>
-            <index>true</index>
-            <manifest>
-              <addClasspath>false</addClasspath>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-            </manifest>
-            <manifestEntries>
-              <Vaadin-Package-Version>1</Vaadin-Package-Version>
-            </manifestEntries>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-maven-plugin</artifactId>
-        <version>${vaadin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-frontend</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>directory</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.1.0</version>
-            <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>assembly/assembly.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <phase>install</phase>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <version>3.0.1</version>
-            <executions>
-              <execution>
-                <id>attach-sources</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>jar-no-fork</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.0.1</version>
-            <executions>
-              <execution>
-                <id>attach-javadocs</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <quiet>true</quiet>
-              <additionalparam>-Xdoclint:none</additionalparam>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>3.1.2</version>
-            <configuration>
-              <!-- Generated file that shouldn't be included in add-ons -->
-              <excludes>
-                <exclude>META-INF/VAADIN/config/flow-build-info.json</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- Run (demo) in production mode -->
-    <profile>
-      <id>production</id>
-      <properties>
-        <vaadin.productionMode>true</vaadin.productionMode>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>com.vaadin</groupId>
-          <artifactId>flow-server-production-mode</artifactId>
-        </dependency>
-      </dependencies>
-
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>build-frontend</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- does not include custom js files -->
-    <!-- requires a symlink like "tooltips4vaadin\frontend> mklink /D js ..\src\main\resources\META-INF\resources\frontend\js" -->
-    <profile>
-      <id>demo</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>build-frontend</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-maven-plugin</artifactId>
-            <version>${jetty.version}</version>
-            <executions>
-              <execution>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <scanIntervalSeconds>-1</scanIntervalSeconds>
-              <!-- Use test scope because the UI/demo classes are in the test package. -->
-              <useTestScope>true</useTestScope>
-              <supportedPackagings>
-                <supportedPackaging>jar</supportedPackaging>
-              </supportedPackagings>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
