@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>tooltips4vaadin-parent</artifactId>
+    <artifactId>tooltips4vaadin</artifactId>
     <groupId>dev.mett.vaadin</groupId>
     <version>${revision}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>tooltips4vaadin</artifactId>
+  <artifactId>lib</artifactId>
 
   <properties>
     <!-- only deploy this artefact -->
@@ -39,6 +39,7 @@
   </dependencies>
 
   <build>
+    <finalName>tooltips4vaadin</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

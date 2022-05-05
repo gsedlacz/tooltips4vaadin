@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>dev.mett.vaadin</groupId>
-  <artifactId>tooltips4vaadin-parent</artifactId>
+  <artifactId>tooltips4vaadin</artifactId>
   <version>${revision}</version>
 
   <name>Tooltips4Vaadin</name>
@@ -152,7 +152,7 @@
       <!-- INTERNAL -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>tooltips4vaadin</artifactId>
+        <artifactId>lib</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
@@ -201,7 +201,7 @@
   </dependencyManagement>
 
   <modules>
-    <module>tooltips4vaadin</module>
+    <module>lib</module>
     <module>shared</module>
     <module>demo</module>
     <module>test</module>
@@ -211,7 +211,7 @@
     <profile>
       <id>libonly</id>
       <modules>
-        <module>tooltips4vaadin</module>
+        <module>lib</module>
       </modules>
     </profile>
   </profiles>
