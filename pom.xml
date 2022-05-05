@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>dev.mett.vaadin</groupId>
-  <artifactId>tooltips4vaadin</artifactId>
+  <artifactId>tooltips4vaadin-parent</artifactId>
   <version>${revision}</version>
 
-  <name>Tooltips4Vaadin</name>
+  <name>Tooltips4Vaadin Parent</name>
   <description>Proper tooltips for Vaadin Flow.</description>
   <packaging>pom</packaging>
 
@@ -152,7 +152,7 @@
       <!-- INTERNAL -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>lib</artifactId>
+        <artifactId>tooltips4vaadin</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
@@ -278,6 +278,27 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
+        <configuration>
+          <flattenMode>
+            oss
+          </flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

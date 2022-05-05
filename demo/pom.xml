@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>tooltips4vaadin</artifactId>
+    <artifactId>tooltips4vaadin-parent</artifactId>
     <groupId>dev.mett.vaadin</groupId>
     <version>${revision}</version>
     <relativePath>../pom.xml</relativePath>
@@ -26,7 +26,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>lib</artifactId>
+      <artifactId>tooltips4vaadin</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
