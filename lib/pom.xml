@@ -13,6 +13,11 @@
 
   <artifactId>lib</artifactId>
 
+  <properties>
+    <!-- only deploy this artefact -->
+    <maven.deploy.skip>false</maven.deploy.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.vaadin</groupId>
@@ -32,6 +37,10 @@
       <artifactId>junit-jupiter-api</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <finalName>tooltips4vaadin</finalName>
+  </build>
 
   <profiles>
     <profile>
