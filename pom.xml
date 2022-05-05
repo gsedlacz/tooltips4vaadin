@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>dev.mett.vaadin</groupId>
-  <artifactId>tooltips4vaadin-parent</artifactId>
+  <artifactId>tooltips4vaadin</artifactId>
   <version>${revision}</version>
 
   <name>Tooltips4Vaadin Parent</name>
@@ -152,7 +152,7 @@
       <!-- INTERNAL -->
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>tooltips4vaadin</artifactId>
+        <artifactId>tooltip</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
