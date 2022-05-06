@@ -360,4 +360,6 @@ dist
 .flattened-pom.xml
 
 # vaadin generated frontend dir
-frontend/
+/lib/frontend/
+/demo/frontend/
+/test/frontend/
