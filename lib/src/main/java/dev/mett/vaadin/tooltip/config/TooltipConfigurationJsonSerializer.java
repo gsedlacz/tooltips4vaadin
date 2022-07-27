@@ -37,7 +37,7 @@ public class TooltipConfigurationJsonSerializer {
       return fromCollection(bean);
     }
     if (bean instanceof Map) {
-      return fromMap((Map<String, Object>) bean);
+      return fromMapUnchecked(bean);
     }
 
     Optional<JsonValue> simpleType = tryToConvertToSimpleType(bean);
@@ -119,6 +119,12 @@ public class TooltipConfigurationJsonSerializer {
         }
     }
     return array;
+  }
+
+  @SuppressWarnings("unchecked")
+  private static JsonObject fromMapUnchecked(Object bean) {
+    // keys are always (fingers crossed) strings
+    return fromMap((Map<String, Object>) bean);
   }
 
   private static JsonObject fromMap(Map<String, Object> map) {
