@@ -30,7 +30,7 @@ public class GridExample {
       return key;
     }).setHeader("Key");
     grid.addColumn(GridData::getRandom).setHeader("Value");
-    grid.setDataProvider(dataProvider);
+    grid.setItems(dataProvider);
 
     return grid;
   }
