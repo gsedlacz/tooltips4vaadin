@@ -4,6 +4,12 @@ This plugin allows you to define proper tooltips.
 
 ![Tooltip example image did not load.](https://gitlab.com/gsedlacz/tooltips4vaadin/raw/master/misc/demo.png "Tooltip demo")
 
+## EOL 2023-05
+
+Since I no longer work with Vaadin (for two years by now) and I will not find the time to keep up with the changes in the framework, I will no longer work on the plugin.
+
+Thank you for input and general kindness.
+
 ## Official Download
 
 [Vaadin Directory](https://vaadin.com/directory/component/tooltips4vaadin)
