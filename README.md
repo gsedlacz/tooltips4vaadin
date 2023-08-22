@@ -12,7 +12,8 @@ Thank you for input and general kindness.
 
 ### UPDATE 2023-08
 
-If you want implement changes or add features head over to https://gitlab.com/gsedlacz/tooltips4vaadin/
+If you want implement changes or add features head over to https://gitlab.com/gsedlacz/tooltips4vaadin/.
+The code not that complicated ;)
 
 ## Official Download
 
