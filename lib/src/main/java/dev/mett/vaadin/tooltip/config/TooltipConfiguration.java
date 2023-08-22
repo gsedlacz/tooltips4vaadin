@@ -58,10 +58,9 @@ public class TooltipConfiguration implements Serializable {
   // TODO: support:
   // 1. animateFill
   // 2. animation
-  // 3. appendTo
-  // 4. aria
-  // 5. getReferenceClientRect
-  // 6. inlinePositioning
+  // 3. aria
+  // 4. getReferenceClientRect
+  // 5. inlinePositioning
 
   /**
    * Defines if the content is rendered as HTML or plain text
@@ -71,6 +70,19 @@ public class TooltipConfiguration implements Serializable {
   private Boolean allowHTML = true;
 
 //    private boolean animateFill; //TODO: requires CSS import
+
+  /**
+   * Defines the element to which the tooltip should be appended.
+   * Possible values are 'parent' or any element or a function which
+   * is evaluated before the tooltip is displayed.
+   * The function accepts one argument called 'reference' which
+   * holds reference to the tooltip owner.
+   * When {@code null} then default tippy behavior is used
+   * <p>
+   * See documentation: https://atomiks.github.io/tippyjs/v6/all-props/#appendto
+   */
+  @Getter
+  private String appendTo;
 
   /**
    * Defines if the tooltip points to its parent element
@@ -233,6 +245,31 @@ public class TooltipConfiguration implements Serializable {
   /*
    * ### SETTER ###
    */
+
+  /**
+   * The element to which the tooltip should be appended
+   *
+   * @param appendTo option
+   */
+  public void setAppendTo(TC_APPEND_TO appendTo) {
+    this.appendTo = appendTo != null ? appendTo.getValue(): null;
+  }
+
+  /**
+   * Defines the element to which the tooltip should be appended.
+   * Possible values are 'parent' or a body of a function which
+   * is evaluated before the tooltip is displayed.
+   * The function accepts one argument called 'reference' which
+   * holds reference to the tooltip owner.
+   * When {@code null} then default tippy behavior is used
+   * <p>
+   * See documentation: https://atomiks.github.io/tippyjs/v6/all-props/#appendto
+   *
+   * @param appendTo value
+   */
+  public void setAppendTo(String appendTo) {
+    this.appendTo = appendTo;
+  }
 
   /**
    * Delay in ms before the tooltip is shown or hidden.
