@@ -10,6 +10,10 @@ Since I no longer work with Vaadin (for two years by now) and I will not find th
 
 Thank you for input and general kindness.
 
+### UPDATE 2023-08
+
+If you want implement changes or add features head over to https://gitlab.com/gsedlacz/tooltips4vaadin/
+
 ## Official Download
 
 [Vaadin Directory](https://vaadin.com/directory/component/tooltips4vaadin)
